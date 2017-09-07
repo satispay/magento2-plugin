@@ -1,6 +1,6 @@
 {
   "name": "satispay/magento2-plugin",
-  "description": "Satispay",
+  "description": "Satispay  Magento2 Plugin",
   "license": "GPL-3.0",
   "keywords": ["satispay", "magento2", "plugin"],
   "version": "1.0.0",
