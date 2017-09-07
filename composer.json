@@ -1,0 +1,24 @@
+{
+  "name": "satispay/magento2-plugin",
+  "description": "Satispay",
+  "license": "GPL-3.0",
+  "version": "1.0.0",
+  "type": "magento2-module",
+  "authors": [
+    {
+      "name": "Satispay",
+      "homepage": "http://satispay.com"
+    }
+  ],
+  "require": {
+    "satispay/online-api-php-sdk": "^1.3"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Satispay\\Satispay\\": ""
+    }
+  }
+}

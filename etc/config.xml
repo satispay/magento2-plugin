@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+  <default>
+    <payment>
+      <satispay_satispay>
+        <model>Satispay\Satispay\Model\Payment</model>
+        <title>Satispay</title>
+        <staging>0</staging>
+        <sort_order>1</sort_order>
+      </satispay_satispay>
+    </payment>
+  </default>
+</config>

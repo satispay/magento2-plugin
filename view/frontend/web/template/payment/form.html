@@ -1,0 +1,31 @@
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+  <div class="payment-method-title field choice">
+      <input type="radio"
+        name="payment[method]"
+        class="radio"
+        data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"
+      />
+      <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+  </div>
+  <div class="payment-method-content">
+    <div class="payment-method-note">
+      <span data-bind="i18n: 'You will be redirected to the Satispay website.'"></span>
+    </div>
+    <div class="actions-toolbar">
+      <div class="primary">
+        <button class="action primary checkout"
+          type="submit"
+          data-bind="
+            click: placeOrder,
+            attr: {title: $t('Continue to Satispay')},
+            css: {disabled: !isPlaceOrderActionAllowed()},
+            enable: (getCode() == isChecked())
+          "
+          disabled
+        >
+          <span data-bind="i18n: 'Continue to Satispay'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
