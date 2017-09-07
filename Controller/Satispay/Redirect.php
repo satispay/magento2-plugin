@@ -20,20 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace Satispay\Satispay\Controller\Satispay;
 
 class Redirect extends \Magento\Framework\App\Action\Action {
-  protected $_satispayPayment;
   protected $_checkoutSession;
-  protected $_logger;
 
   public function __construct(
     \Magento\Framework\App\Action\Context $context,
-    \Satispay\Satispay\Model\Payment $satispayPayment,
-    \Magento\Checkout\Model\Session $checkoutSession,
-    \Psr\Log\LoggerInterface $logger
+    \Magento\Checkout\Model\Session $checkoutSession
   ) {
     parent::__construct($context);
-    $this->_satispayPayment = $satispayPayment;
     $this->_checkoutSession = $checkoutSession;
-    $this->_logger = $logger;
   }
 
   public function execute() {

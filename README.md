@@ -7,9 +7,9 @@ composer require satispay/magento2-plugin
 ```
 
 ```
-bin/magento module:enable Satispay_Satispay
+php bin/magento module:enable Satispay_Satispay
 ```
 
 ```
-bin/magento setup:upgrade
+php bin/magento setup:upgrade
 ```
