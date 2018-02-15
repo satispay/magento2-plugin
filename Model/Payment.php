@@ -57,7 +57,10 @@ class Payment extends \Magento\Payment\Model\Method\AbstractMethod {
 
     \SatispayOnline\Api::setSecurityBearer($this->getConfigData('security_bearer'));
     \SatispayOnline\Api::setStaging((bool)$this->getConfigData('staging'));
-    \SatispayOnline\Api::setClient('Magento/'.$version);
+
+    \SatispayOnline\Api::setPluginName('Magento2');
+    \SatispayOnline\Api::setType('ECOMMERCE-PLUGIN');
+    \SatispayOnline\Api::setPlatformVersion($version);
   }
 
   public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null) {

@@ -1,9 +1,9 @@
 find . -name '.DS_Store' -type f -delete
 rm -rf magento2.zip
-rm -rf .tmp
-mkdir .tmp && mkdir .tmp
-cp -R * .tmp
-cd .tmp && zip -r archive.zip .
+rm -rf .bundle
+mkdir .bundle && mkdir .bundle
+cp -R * .bundle
+cd .bundle && zip -r archive.zip .
 cd ..
-mv .tmp/archive.zip magento2.zip
-rm -rf .tmp
+mv .bundle/archive.zip bundle.zip
+rm -rf .bundle

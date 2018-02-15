@@ -1,2 +1,4 @@
-/.tmp
-magento2.zip
+/.bundle
+/vendor
+bundle.zip
+composer.lock
