@@ -1,0 +1,30 @@
+{
+  "name": "satispay/online-api-php-sdk",
+  "description": "Satispay Online API PHP SDK",
+  "license": "MIT",
+  "keywords": [
+    "satispay",
+    "online",
+    "api",
+    "php",
+    "sdk"
+  ],
+  "version": "1.6.4",
+  "authors": [
+    {
+      "name": "Satispay",
+      "homepage": "http://satispay.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "SatispayOnline\\": "lib/"
+    }
+  }
+}

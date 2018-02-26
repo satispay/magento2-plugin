@@ -6,7 +6,8 @@ class Redirect extends \Magento\Framework\App\Action\Action {
 
   public function __construct(
     \Magento\Framework\App\Action\Context $context,
-    \Magento\Checkout\Model\Session $checkoutSession
+    \Magento\Checkout\Model\Session $checkoutSession,
+    \Satispay\Satispay\Model\Payment $payment
   ) {
     parent::__construct($context);
     $this->_checkoutSession = $checkoutSession;

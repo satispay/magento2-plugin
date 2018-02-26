@@ -1,6 +1,8 @@
 <?php
 namespace Satispay\Satispay\Model;
 
+require_once(dirname(__FILE__).'/../includes/online-api-php-sdk/init.php');
+
 class Payment extends \Magento\Payment\Model\Method\AbstractMethod {
   protected $_code = 'satispay_satispay';
   protected $_canRefund = true;
@@ -41,8 +43,9 @@ class Payment extends \Magento\Payment\Model\Method\AbstractMethod {
     \SatispayOnline\Api::setStaging((bool)$this->getConfigData('staging'));
 
     \SatispayOnline\Api::setPluginName('Magento2');
-    \SatispayOnline\Api::setType('ECOMMERCE-PLUGIN');
+    \SatispayOnline\Api::setPluginVersion('1.2.0');
     \SatispayOnline\Api::setPlatformVersion($version);
+    \SatispayOnline\Api::setType('ECOMMERCE-PLUGIN');
   }
 
   public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null) {
@@ -65,7 +68,7 @@ class Payment extends \Magento\Payment\Model\Method\AbstractMethod {
     \SatispayOnline\Refund::create(array(
       'charge_id' => $payment->getParentTransactionId(),
       'currency' => $order->getOrderCurrencyCode(),
-      'amount' => $amount * 100,
+      'amount' => round($amount * 100),
       'description' => '#'.$order->getIncrementId()
     ));
 

@@ -3,16 +3,13 @@
   "description": "Satispay Magento2 Plugin",
   "license": "MIT",
   "keywords": ["satispay", "magento2", "plugin"],
-  "version": "1.1.1",
+  "version": "1.2.0",
   "authors": [
     {
       "name": "Satispay",
       "homepage": "http://satispay.com"
     }
   ],
-  "require": {
-    "satispay/online-api-php-sdk": "^1.6.2"
-  },
   "type": "magento2-module",
   "autoload": {
     "files": [

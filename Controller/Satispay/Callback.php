@@ -6,15 +6,16 @@ class Callback extends \Magento\Framework\App\Action\Action {
 
   public function __construct(
     \Magento\Framework\App\Action\Context $context,
-    \Magento\Sales\Model\Order $order
+    \Magento\Sales\Model\Order $order,
+    \Satispay\Satispay\Model\Payment $payment
   ) {
     parent::__construct($context);
     $this->_order = $order;
   }
 
   public function execute() {
-    $charge = \SatispayOnline\Charge::get($this->getRequest()->getParam('charge'));
-    $order = $this->_order->load($charge->metadata->orderid);
+    $charge = \SatispayOnline\Charge::get($this->getRequest()->getParam('charge_id'));
+    $order = $this->_order->load($charge->metadata->order_id);
     
     if ($order->getState() === $order::STATE_NEW) {
       if ($charge->status === 'SUCCESS') {
@@ -22,10 +23,12 @@ class Callback extends \Magento\Framework\App\Action\Action {
         $payment->setTransactionId($charge->id);
         $payment->setCurrencyCode($charge->currency);
         $payment->setIsTransactionClosed(true);
-        $payment->registerCaptureNotification($charge->amount / 100);
+        $payment->registerCaptureNotification(round($charge->amount / 100));
         
         $order->save();
-      } else {
+      }
+      
+      if ($charge->status === 'FAILURE') {
         $payment = $order->getPayment();
         $payment->setTransactionId($charge->id);
         $payment->setCurrencyCode($charge->currency);
@@ -37,6 +40,7 @@ class Callback extends \Magento\Framework\App\Action\Action {
         $order->save();
       }
     }
+    
     $this->getResponse()->setBody('OK');
   }
 }
