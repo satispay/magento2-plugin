@@ -24,7 +24,7 @@ class Payment extends \Magento\Framework\App\Action\Action {
         'phone_number' => '',
         'redirect_url' => $this->_url->getUrl('satispay/satispay/redirect'),
         'callback_url' => $this->_url->getUrl('satispay/satispay/callback', array(
-          'charge_id' => '{uuid}'
+          '_query' => 'charge_id={uuid}'
         )),
         'amount_unit' => round($lastOrder->getGrandTotal() * 100),
         'currency' => $lastOrder->getOrderCurrencyCode(),
