@@ -43,7 +43,6 @@ class Payment extends \Magento\Payment\Model\Method\AbstractMethod {
     \SatispayOnline\Api::setStaging((bool)$this->getConfigData('staging'));
 
     \SatispayOnline\Api::setPluginName('Magento2');
-    \SatispayOnline\Api::setPluginVersion('1.2.2');
     \SatispayOnline\Api::setPlatformVersion($version);
     \SatispayOnline\Api::setType('ECOMMERCE-PLUGIN');
   }
