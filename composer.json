@@ -3,7 +3,7 @@
   "description": "Satispay Magento2 Plugin",
   "license": "MIT",
   "keywords": ["satispay", "magento2", "plugin"],
-  "version": "1.2.3",
+  "version": "1.2.4",
   "authors": [
     {
       "name": "Satispay",

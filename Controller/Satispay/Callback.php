@@ -23,7 +23,7 @@ class Callback extends \Magento\Framework\App\Action\Action {
         $payment->setTransactionId($charge->id);
         $payment->setCurrencyCode($charge->currency);
         $payment->setIsTransactionClosed(true);
-        $payment->registerCaptureNotification(round($charge->amount / 100));
+        $payment->registerCaptureNotification($charge->amount / 100);
         
         $order->save();
       }
