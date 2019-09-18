@@ -1,0 +1,8 @@
+.satispay-section .heading {
+  background: url("images/logo.png") no-repeat 0 50% / 18rem auto;
+  padding-left: 20rem;
+}
+
+.satispay-section .button-container {
+  float: right;
+}

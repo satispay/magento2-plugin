@@ -2,12 +2,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
   <default>
     <payment>
-      <satispay_satispay>
-        <model>Satispay\Satispay\Model\Payment</model>
+      <satispay>
+        <model>Satispay\Satispay\Model\Method\Satispay</model>
         <title>Satispay</title>
-        <staging>0</staging>
-        <sort_order>1</sort_order>
-      </satispay_satispay>
+        <active>0</active>
+        <sandbox>0</sandbox>
+      </satispay>
     </payment>
   </default>
 </config>
