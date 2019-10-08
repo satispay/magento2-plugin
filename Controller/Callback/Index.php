@@ -31,7 +31,8 @@ class Index extends \Magento\Framework\App\Action\Action
                 $order->setStatus($order::STATE_PROCESSING);
                 $order->save();
             } elseif ($satispayPayment->status == 'CANCELED') {
-                $order->cancel();
+                $order->registerCancellation();
+                $order->save();
             }
         }
 
