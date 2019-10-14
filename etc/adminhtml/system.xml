@@ -2,28 +2,57 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
   <system>
     <section id="payment">
-      <group id="satispay_satispay" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+      <group id="satispay" translate="label comment" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
         <label>Satispay</label>
-        <!-- <comment>
-          <![CDATA[<a href="https://business.satispay.com/signup" target="_blank">Click here to sign up for Satispay account</a>]]>
-        </comment> -->
-        <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+        <comment>Satispay is mobile payment platform, independent from debit and credit card networks, usable by anybody with a bank account, acceptable by any merchants using any kind of devices and POS.</comment>
+        <fieldset_css>complex satispay-section</fieldset_css>
+        <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Fieldset</frontend_model>
+        <attribute type="displayIn">recommended_solutions</attribute>
+
+        <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
           <label>Enabled</label>
           <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
         </field>
-        <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="title" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
           <label>Title</label>
         </field>
-        <field id="security_bearer" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label>Security Bearer</label>
-          <comment><![CDATA[Get it from <a href="https://business.satispay.com" target="_blank">business.satispay.com</a>]]></comment>
-        </field>
-        <field id="staging" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+
+        <field id="sandbox" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
           <label>Sandbox</label>
+          <comment>Set this to "Yes" to test payments</comment>
           <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
         </field>
-        <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label>Sort Order</label>
+
+        <field id="activation_code" translate="button_label attribute" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+          <attribute type="button_label">Configure with an Activation Code</attribute>
+          <attribute type="sandbox">0</attribute>
+          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\ActivationCode</frontend_model>
+          <depends>
+            <field id="sandbox">0</field>
+          </depends>
+        </field>
+        <field id="key_id" translate="label" type="hidden" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Key ID</label>
+          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Hidden</frontend_model>
+          <depends>
+            <field id="sandbox">0</field>
+          </depends>
+        </field>
+
+        <field id="sandbox_activation_code" translate="button_label attribute" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+          <attribute type="button_label">Configure with a Sandbox Activation Code</attribute>
+          <attribute type="sandbox">1</attribute>
+          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\ActivationCode</frontend_model>
+          <depends>
+            <field id="sandbox">1</field>
+          </depends>
+        </field>
+        <field id="sandbox_key_id" translate="label" type="hidden" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Sandbox Key ID</label>
+          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Hidden</frontend_model>
+          <depends>
+            <field id="sandbox">1</field>
+          </depends>
         </field>
       </group>
     </section>
