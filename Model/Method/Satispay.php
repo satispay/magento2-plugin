@@ -1,6 +1,8 @@
 <?php
 namespace Satispay\Satispay\Model\Method;
 
+use Magento\Directory\Helper\Data as DirectoryHelper;
+
 class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
 {
     protected $_code = 'satispay';
@@ -10,6 +12,7 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
     private $config;
 
     public function __construct(
+        \Satispay\Satispay\Model\Config $config,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
@@ -20,7 +23,7 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
-        \Satispay\Satispay\Model\Config $config
+        DirectoryHelper $directory = null
     ) {
         parent::__construct(
             $context,
@@ -32,7 +35,8 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
             $logger,
             $resource,
             $resourceCollection,
-            $data
+            $data,
+            $directory
         );
         $this->config = $config;
 
