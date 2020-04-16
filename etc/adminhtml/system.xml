@@ -54,6 +54,11 @@
             <field id="sandbox">1</field>
           </depends>
         </field>
+
+        <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+          <label>Sort Order</label>
+          <frontend_class>validate-number</frontend_class>
+        </field>
       </group>
     </section>
   </system>
