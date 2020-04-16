@@ -7,7 +7,6 @@
     "magento2",
     "plugin"
   ],
-  "version": "2.0.1",
   "authors": [
     {
       "name": "Satispay",
@@ -18,7 +17,8 @@
     "magento/framework": ">=100.0.0",
     "magento/module-sales": ">=100.0.0",
     "magento/module-payment": ">=100.0.0",
-    "magento/module-checkout": ">=100.0.0"
+    "magento/module-checkout": ">=100.0.0",
+    "satispay/gbusiness-api-php-sdk": "dev-master"
   },
   "type": "magento2-module",
   "autoload": {
