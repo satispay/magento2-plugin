@@ -36,8 +36,6 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
         );
         $this->config = $config;
 
-        require_once(dirname(__FILE__)."/../../satispay-sdk/init.php");
-
         \SatispayGBusiness\Api::setPublicKey($this->config->getPublicKey());
         \SatispayGBusiness\Api::setPrivateKey($this->config->getPrivateKey());
 

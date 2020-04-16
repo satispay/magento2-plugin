@@ -18,7 +18,7 @@
     "magento/module-sales": ">=100.0.0",
     "magento/module-payment": ">=100.0.0",
     "magento/module-checkout": ">=100.0.0",
-    "satispay/gbusiness-api-php-sdk": "dev-master"
+    "satispay/gbusiness-api-php-sdk": "dev-marketplace"
   },
   "type": "magento2-module",
   "autoload": {
