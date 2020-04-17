@@ -15,7 +15,12 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
         $htmlId = $element->getHtmlId();
 
         $html .= '<div class="button-container">';
-        $html .= '<button type="button" class="button action-configure" id="'.$htmlId.'-head" onclick="toggleSatispaySettings.call(this, \''.$htmlId.'\', \''.$this->getUrl('adminhtml/*/state').'\'); return false;">';
+        $html .= '<button type="button" class="button action-configure" id="'
+            . $htmlId
+            . '-head" onclick="toggleSatispaySettings.call(this, \''
+            . $htmlId
+            . '\', \''
+            . $this->getUrl('adminhtml/*/state').'\'); return false;">';
         $html .= '<span class="state-closed">'.__('Configure').'</span>';
         $html .= '<span class="state-opened">'.__('Close').'</span>';
         $html .= '</button>';

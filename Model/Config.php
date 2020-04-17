@@ -19,10 +19,10 @@ class Config
 
     public function generateKeys($storeId = "default")
     {
-        $pkeyResource = openssl_pkey_new(array(
+        $pkeyResource = openssl_pkey_new([
             "digest_alg" => "sha256",
             "private_key_bits" => 2048
-        ));
+        ]);
 
         openssl_pkey_export($pkeyResource, $generatedPrivateKey);
 
@@ -38,7 +38,11 @@ class Config
         // $generatedPublicKey = str_replace("-----END PUBLIC KEY-----", "", $generatedPublicKey);
 
         $this->config->saveConfig("payment/satispay/public_key", $generatedPublicKey, $storeId);
-        $this->config->saveConfig("payment/satispay/private_key", $this->encryptor->encrypt($generatedPrivateKey), $storeId);
+        $this->config->saveConfig(
+            "payment/satispay/private_key",
+            $this->encryptor->encrypt($generatedPrivateKey),
+            $storeId
+        );
     }
 
     public function getPublicKey($storeId = "default")

@@ -17,10 +17,10 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
+        \Satispay\Satispay\Model\Config $config,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = [],
-        \Satispay\Satispay\Model\Config $config
+        array $data = []
     ) {
         parent::__construct(
             $context,
@@ -47,7 +47,7 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        $productMetadata = $objectManager->get(\Magento\Framework\App\ProductMetadataInterface::class);
         $version = $productMetadata->getVersion();
 
         \SatispayGBusiness\Api::setPluginNameHeader('Magento2');
