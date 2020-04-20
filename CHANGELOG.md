@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 2.0.2
 - Performed refactoring to adhere to Magento 2 Coding Standards
 - Set SDK requirement to version ^1.2
 - Removed SDK directory
