@@ -71,4 +71,15 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
 
         return $this;
     }
+
+    /**
+     * By returning true, Magento will not send the new order email immediately.
+     * This will eventually be done by Satispay during the callback action.
+     *
+     * @return bool
+     */
+    public function getOrderPlaceRedirectUrl()
+    {
+        return true;
+    }
 }
