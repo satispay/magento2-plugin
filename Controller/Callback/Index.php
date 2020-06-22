@@ -35,11 +35,12 @@ class Index extends \Magento\Framework\App\Action\Action
                 $order->setStatus($order::STATE_PROCESSING);
                 $order->save();
 
+                // Payment is OK: send the new order email
                 if (!$order->getEmailSent()) {
                     $this->orderSender->send($order);
                 }
             } elseif ($satispayPayment->status == 'CANCELED') {
-                $order->registerCancellation();
+                $order->registerCancellation(__('Payment received with status CANCELED.'));
                 $order->save();
             }
         }
