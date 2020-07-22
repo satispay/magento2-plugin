@@ -17,13 +17,13 @@ class Index extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $order = $this->checkoutSession->getLastRealOrder();
-        
+
         if ($order->getState() == $order::STATE_NEW) {
             $satispayPayment = \SatispayGBusiness\Payment::create([
                 "flow" => "MATCH_CODE",
                 "amount_unit" => $order->getGrandTotal() * 100,
                 "currency" => $order->getOrderCurrencyCode(),
-                'description' => '#'.$order->getIncrementId(),
+                "external_code" => $order->getIncrementId(),
                 "callback_url" => $this->_url->getUrl('satispay/callback/', [
                     "_query" => "payment_id={uuid}"
                 ]),
