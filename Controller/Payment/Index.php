@@ -1,4 +1,5 @@
 <?php
+
 namespace Satispay\Satispay\Controller\Payment;
 
 class Index extends \Magento\Framework\App\Action\Action
@@ -9,7 +10,8 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Satispay\Satispay\Model\Method\Satispay $satispay
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->checkoutSession = $checkoutSession;
     }

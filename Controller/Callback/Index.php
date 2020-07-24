@@ -1,4 +1,5 @@
 <?php
+
 namespace Satispay\Satispay\Controller\Callback;
 
 class Index extends \Magento\Framework\App\Action\Action
@@ -12,7 +13,8 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\Order $order,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \Satispay\Satispay\Model\Method\Satispay $satispay
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->order = $order;
         $this->orderSender = $orderSender;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Satispay\Satispay\Model\Method;
 
 class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
@@ -21,7 +22,8 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct(
             $context,
             $registry,
