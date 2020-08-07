@@ -1,4 +1,5 @@
 <?php
+
 namespace Satispay\Satispay\Controller\Redirect;
 
 
@@ -13,7 +14,8 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Session $checkoutSession,
         \Satispay\Satispay\Model\Method\Satispay $satispay,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->checkoutSession = $checkoutSession;
         $this->orderRepository = $orderRepository;
