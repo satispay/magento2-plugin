@@ -25,10 +25,15 @@ class Index extends \Magento\Framework\App\Action\Action
     {
         $satispayPayment = \SatispayGBusiness\Payment::get($this->getRequest()->getParam("payment_id"));
 
+        // Set last transition id as the satispay payment id
+        $order = $this->checkoutSession->getLastRealOrder();
+        $payment = $order->getPayment();
+        $payment->setLastTransId($satispayPayment->id);
+        $this->orderRepository->save($order);
+
         if ($satispayPayment->status == 'ACCEPTED') {
             $this->_redirect('checkout/onepage/success');
         } else {
-            $order = $this->checkoutSession->getLastRealOrder();
             $order->registerCancellation(__('Payment has been cancelled.'));
             $this->orderRepository->save($order);
             $this->checkoutSession->restoreQuote();

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="satispay_finalize_unhandled_payments" instance="Satispay\Satispay\Command\CompleteUnhandledTransaction" method="executeCron">
+            <schedule>0 */4 * * *</schedule>
+        </job>
+    </group>
+</config>
