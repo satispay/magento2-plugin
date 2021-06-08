@@ -50,7 +50,8 @@ class FinalizePayment
                 $this->orderSender->send($order);
             }
             return true;
-        } elseif ($satispayPayment->status == 'CANCELED') {
+        }
+        if ($satispayPayment->status == 'CANCELED') {
             $order->registerCancellation(__('Payment received with status CANCELED.'));
             $order->save();
             return true;
