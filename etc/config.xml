@@ -7,6 +7,8 @@
         <title>Satispay</title>
         <active>0</active>
         <sandbox>0</sandbox>
+        <finalize_unhandled_transactions>0</finalize_unhandled_transactions>
+        <finalize_max_hours>4</finalize_max_hours>
       </satispay>
     </payment>
   </default>

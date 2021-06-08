@@ -81,4 +81,32 @@ class Config
     {
         return $this->scopeConfig->getValue("payment/satispay/sandbox_key_id", $storeId);
     }
+
+    public function getActive($storeId)
+    {
+
+        return $this->scopeConfig->getValue(
+            "payment/satispay/active",
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    public function getFinalizeUnhandledTransactions($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            "payment/satispay/finalize_unhandled_transactions",
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    public function getFinalizeMaxHours($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            "payment/satispay/finalize_max_hours",
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
 }
