@@ -7,6 +7,7 @@ use Magento\Framework\App\Area;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Psr\Log\LoggerInterface;
 
 class CompleteUnhandledTransaction extends Command
 {
@@ -15,12 +16,19 @@ class CompleteUnhandledTransaction extends Command
 
     protected $appState;
 
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
     public function __construct(
         \Satispay\Satispay\Model\FinalizeUnhandledOrders $finalizeUnhandledOrdersService,
-        \Magento\Framework\App\State $appState
+        \Magento\Framework\App\State $appState,
+        LoggerInterface $logger
     ) {
         $this->finalizeUnhandledOrdersService = $finalizeUnhandledOrdersService;
         $this->appState = $appState;
+        $this->logger = $logger;
         parent::__construct();
     }
 
@@ -39,12 +47,20 @@ class CompleteUnhandledTransaction extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->appState->setAreaCode(Area::AREA_FRONTEND);
-        $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
+        try {
+            $this->appState->setAreaCode(Area::AREA_FRONTEND);
+            $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
+        } catch (\Exception $e) {
+            $this->logger->error("An error has occured when Finalizing unhandled Satispay Orders: " . $e->getMessage());
+        }
     }
 
     public function executeCron()
     {
-        $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
+        try {
+            $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
+        } catch (\Exception $e) {
+            $this->logger->error("An error has occured when Finalizing unhandled Satispay Orders: " . $e->getMessage());
+        }
     }
 }

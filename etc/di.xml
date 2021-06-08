@@ -29,5 +29,10 @@
             <argument name="logger" xsi:type="object">Satispay\Satispay\Logger\Logger</argument>
         </arguments>
     </type>
+    <type name="Satispay\Satispay\Command\CompleteUnhandledTransaction">
+        <arguments>
+            <argument name="logger" xsi:type="object">Satispay\Satispay\Logger\Logger</argument>
+        </arguments>
+    </type>
 </config>
 
