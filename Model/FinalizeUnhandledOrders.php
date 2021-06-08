@@ -76,6 +76,9 @@ class FinalizeUnhandledOrders
         $this->logger = $logger;
     }
 
+    /**
+     *  Get list of orders from available stores and process them
+     */
     public function finalizeUnhandledOrders()
     {
         $availableStores = $this->getAvailableStores();
@@ -93,6 +96,7 @@ class FinalizeUnhandledOrders
 
             $orders = $this->orderRepository->getList($searchCriteria);
 
+            /** @var \Magento\Sales\Model\Order $order */
             foreach ($orders->getItems() as $order) {
                 $orderPayment = $order->getPayment();
                 if (isset($orderPayment) && $orderPayment->getMethod() === 'satispay') {
@@ -103,25 +107,39 @@ class FinalizeUnhandledOrders
                         $this->logger->error("Could not finalize Order $orderId for Satispay payment: " . $e->getMessage());
                     }
                 }
-
             }
         }
     }
 
-    private function processOrder($order)
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     */
+    private function processOrder(\Magento\Sales\Model\Order $order)
     {
+        $orderId = $order->getEntityId();
         $payment = $order->getPayment();
         $satispayPaymentId = $payment->getLastTransId();
         if(isset($satispayPaymentId)) {
             $satispayPayment = \SatispayGBusiness\Payment::get($satispayPaymentId);
             $hasBeenFinalized = $this->finalizePaymentService->finalizePayment($satispayPayment, $order);
             if ($hasBeenFinalized) {
-                $this->addCommentToOrder($order);
+                $this->logger->info("The Order $orderId has been finalized for Satispay payment.");
+                try {
+                    $this->addCommentToOrder($order);
+                } catch (\Exception $e) {
+                    $this->logger->error("Could not save comment to Order $orderId: " . $e->getMessage());
+                }
             }
         }
     }
 
-    private function addCommentToOrder($order)
+    /**
+     * Save a custom comment to the Magento Order
+     *
+     * @param \Magento\Sales\Model\Order $order
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
+    private function addCommentToOrder(\Magento\Sales\Model\Order $order)
     {
         if ($order->canComment()) {
             $comment = $order->addStatusHistoryComment(
@@ -131,6 +149,11 @@ class FinalizeUnhandledOrders
         }
     }
 
+    /**
+     * Get available stores enabled for finalize transaction action
+     *
+     * @return array
+     */
     private function getAvailableStores()
     {
         $storeManagerDataList = $this->storeManager->getStores();
@@ -149,10 +172,10 @@ class FinalizeUnhandledOrders
     /**
      * Get the start criteria for the scheduled datetime
      */
-    private function getStartDateScheduledTime($storeCode)
+    private function getStartDateScheduledTime(int $storeId)
     {
         $now = new \DateTime();
-        $scheduledTimeFrame = $this->config->getFinalizeMaxHours($storeCode);
+        $scheduledTimeFrame = $this->config->getFinalizeMaxHours($storeId);
         if (!isset($scheduledTimeFrame)) {
             $scheduledTimeFrame = self::DEFAULT_MAX_HOURS;
         }

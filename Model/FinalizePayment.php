@@ -25,10 +25,15 @@ class FinalizePayment
         $this->orderSender = $orderSender;
     }
 
-    public function finalizePayment($satispayPayment, $order)
+    /**
+     * Finalize a Magento 2 Order Payment following the Satispay Payment Data
+     *
+     * @param $satispayPayment
+     * @param \Magento\Sales\Model\Order $order
+     * @return bool
+     */
+    public function finalizePayment($satispayPayment, \Magento\Sales\Model\Order $order)
     {
-        $hasBeenFinalized = false;
-
         if ($satispayPayment->status == 'ACCEPTED') {
             $payment = $order->getPayment();
             $payment->setTransactionId($satispayPayment->id);
@@ -44,13 +49,13 @@ class FinalizePayment
             if (!$order->getEmailSent()) {
                 $this->orderSender->send($order);
             }
-            $hasBeenFinalized = true;
+            return true;
         } elseif ($satispayPayment->status == 'CANCELED') {
             $order->registerCancellation(__('Payment received with status CANCELED.'));
             $order->save();
-            $hasBeenFinalized = true;
+            return true;
         }
 
-        return $hasBeenFinalized;
+        return false;
     }
 }
