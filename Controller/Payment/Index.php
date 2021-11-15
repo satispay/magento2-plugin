@@ -5,14 +5,18 @@ namespace Satispay\Satispay\Controller\Payment;
 class Index extends \Magento\Framework\App\Action\Action
 {
     protected $checkoutSession;
+    
+    protected $priceCurrency;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Satispay\Satispay\Model\Method\Satispay $satispay
     )
     {
         parent::__construct($context);
+        $this->priceCurrency = $priceCurrency;
         $this->checkoutSession = $checkoutSession;
     }
 
@@ -23,7 +27,7 @@ class Index extends \Magento\Framework\App\Action\Action
         if ($order->getState() == $order::STATE_NEW) {
             $satispayPayment = \SatispayGBusiness\Payment::create([
                 "flow" => "MATCH_CODE",
-                "amount_unit" => $order->getGrandTotal() * 100,
+                "amount_unit" => $this->priceCurrency->roundPrice($order->getGrandTotal()) * 100,
                 "currency" => $order->getOrderCurrencyCode(),
                 "external_code" => $order->getIncrementId(),
                 "callback_url" => $this->_url->getUrl('satispay/callback/', [
