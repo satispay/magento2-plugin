@@ -6,7 +6,7 @@ use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Backend\Block\Template\Context;
 use Satispay\Satispay\Model\Config;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Class ActivationCode
@@ -24,7 +24,7 @@ class ActivationCode extends Field
     private $config;
 
     /**
-     * @var ScopeInterface
+     * @var ScopeConfigInterface
      */
     private $scopeConfig;
 
@@ -32,13 +32,13 @@ class ActivationCode extends Field
      * ActivationCode constructor.
      * @param Context $context
      * @param Config $config
-     * @param ScopeInterface $scopeConfig
+     * @param ScopeConfigInterface $scopeConfig
      * @param array $data
      */
     public function __construct(
         Context $context,
         Config $config,
-        ScopeInterface $scopeConfig,
+        ScopeConfigInterface $scopeConfig,
         array $data = []
     ) {
         $this->scopeConfig = $scopeConfig;

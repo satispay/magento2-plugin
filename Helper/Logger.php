@@ -4,6 +4,7 @@ namespace Satispay\Satispay\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use \Psr\Log\LoggerInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 /**
@@ -21,18 +22,18 @@ class Logger extends AbstractHelper
     protected  $logger;
 
     /**
-     * @var ScopeInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
      * Logger constructor.
      * @param LoggerInterface $logger
-     * @param ScopeInterface $scopeConfig
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         LoggerInterface $logger,
-        ScopeInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig
     )
     {
         $this->logger = $logger;

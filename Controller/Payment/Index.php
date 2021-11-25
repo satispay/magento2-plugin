@@ -9,7 +9,7 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Satispay\Satispay\Model\Method\Satispay;
 use Satispay\Satispay\Helper\Logger;
 use Magento\Framework\Serialize\Serializer\Json as Serializer;
-use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use \SatispayGBusiness\Payment;
 use \SatispayGBusiness\Api;
 
@@ -44,7 +44,7 @@ class Index extends Action
     protected $serializer;
 
     /**
-     * @var ScopeInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
@@ -56,7 +56,7 @@ class Index extends Action
      * @param Satispay $satispay
      * @param Logger $logger
      * @param Serializer $serializer
-     * @param ScopeInterface $scopeConfig
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         Context $context,
@@ -65,7 +65,7 @@ class Index extends Action
         Satispay $satispay,
         Logger $logger,
         Serializer $serializer,
-        ScopeInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($context);
         $this->priceCurrency = $priceCurrency;
