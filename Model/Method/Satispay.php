@@ -2,25 +2,102 @@
 
 namespace Satispay\Satispay\Model\Method;
 
-class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
+use Magento\Framework\Model\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Payment\Helper\Data;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Payment\Model\Method\Logger;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Payment\Model\InfoInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\ProductMetadataInterfaceFactory;
+use Satispay\Satispay\Model\Config;
+use Satispay\Satispay\Helper\Logger as SatispayLogger;
+use Magento\Framework\Serialize\Serializer\Json as Serializer;
+use \SatispayGBusiness\Api;
+use \SatispayGBusiness\Payment;
+
+/**
+ * Class Satispay
+ * @package Satispay\Satispay\Model\Method
+ */
+class Satispay extends AbstractMethod
 {
+    /**
+     * @var string
+     */
     protected $_code = 'satispay';
+
+    /**
+     * @var bool
+     */
     protected $_canRefund = true;
+
+    /**
+     * @var bool
+     */
     protected $_canRefundInvoicePartial = true;
 
     private $config;
 
+    /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadata;
+
+    /**
+     * @var PriceCurrencyInterface
+     */
+    private $priceCurrency;
+
+    /**
+     * @var SatispayLogger
+     */
+    private $satispayLogger;
+
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
+     * Satispay constructor.
+     * @param Context $context
+     * @param Registry $registry
+     * @param ExtensionAttributesFactory $extensionFactory
+     * @param AttributeValueFactory $customAttributeFactory
+     * @param Data $paymentData
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Logger $logger
+     * @param Config $config
+     * @param ProductMetadataInterfaceFactory $productMetadataFactory
+     * @param PriceCurrencyInterface $priceCurrency
+     * @param SatispayLogger $satispayLogger
+     * @param Serializer $serializer
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
+     * @param array $data
+     */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
-        \Satispay\Satispay\Model\Config $config,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        Context $context,
+        Registry $registry,
+        ExtensionAttributesFactory $extensionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        Data $paymentData,
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger,
+        Config $config,
+        ProductMetadataInterfaceFactory $productMetadataFactory,
+        PriceCurrencyInterface $priceCurrency,
+        SatispayLogger $satispayLogger,
+        Serializer $serializer,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     )
     {
@@ -37,41 +114,55 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
             $data
         );
         $this->config = $config;
+        $this->priceCurrency = $priceCurrency;
+        $this->satispayLogger = $satispayLogger;
+        $this->serializer = $serializer;
 
-        \SatispayGBusiness\Api::setPublicKey($this->config->getPublicKey());
-        \SatispayGBusiness\Api::setPrivateKey($this->config->getPrivateKey());
+        Api::setPublicKey($this->config->getPublicKey());
+        Api::setPrivateKey($this->config->getPrivateKey());
 
         if ($this->config->getSandbox()) {
-            \SatispayGBusiness\Api::setKeyId($this->config->getSandboxKeyId());
-            \SatispayGBusiness\Api::setSandbox(true);
+            Api::setKeyId($this->config->getSandboxKeyId());
+            Api::setSandbox(true);
         } else {
-            \SatispayGBusiness\Api::setKeyId($this->config->getKeyId());
+            Api::setKeyId($this->config->getKeyId());
         }
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $productMetadata = $objectManager->get(\Magento\Framework\App\ProductMetadataInterface::class);
-        $version = $productMetadata->getVersion();
+        $this->productMetadata = $productMetadataFactory->create();
+        $version = $this->productMetadata->getVersion();
 
-        \SatispayGBusiness\Api::setPluginNameHeader('Magento2');
-        \SatispayGBusiness\Api::setPlatformVersionHeader($version);
-        \SatispayGBusiness\Api::setTypeHeader('ECOMMERCE-PLUGIN');
+        Api::setPluginNameHeader('Magento2');
+        Api::setPlatformVersionHeader($version);
+        Api::setTypeHeader('ECOMMERCE-PLUGIN');
     }
 
-    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    /**
+     * @param InfoInterface $payment
+     * @param $amount
+     * @return $this
+     */
+    public function refund(InfoInterface $payment, $amount)
     {
-        $order = $payment->getOrder();
+        try {
+            $order = $payment->getOrder();
 
-        $satispayPayment = \SatispayGBusiness\Payment::create([
-          'flow' => "REFUND",
-          'amount_unit' => $amount * 100,
-          'currency' => $order->getOrderCurrencyCode(),
-          "parent_payment_uid" => $payment->getParentTransactionId(),
-          'description' => '#'.$order->getIncrementId()
-        ]);
+            $apiData = [
+                'flow' => "REFUND",
+                'amount_unit' => $this->priceCurrency->roundPrice($amount) * 100,
+                'currency' => $order->getOrderCurrencyCode(),
+                "parent_payment_uid" => $payment->getParentTransactionId(),
+                'description' => '#' . $order->getIncrementId()
+            ];
+            $this->satispayLogger->logInfo(__('Create refund on satispay via API'));
+            $this->satispayLogger->logInfo($this->serializer->serialize($apiData));
 
-        $payment->setTransactionId($satispayPayment->id);
+            $satispayPayment = Payment::create($apiData);
+            $payment->setTransactionId($satispayPayment->id);
 
-        return $this;
+            return $this;
+        } catch (\Exception $e) {
+            $this->satispayLogger->logError($e->getMessaage());
+        }
     }
 
     /**

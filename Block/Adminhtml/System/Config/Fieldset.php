@@ -1,13 +1,26 @@
 <?php
 namespace Satispay\Satispay\Block\Adminhtml\System\Config;
 
+/**
+ * Class Fieldset
+ * @package Satispay\Satispay\Block\Adminhtml\System\Config
+ */
 class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
+
+    /**
+     * @param $element
+     * @return string
+     */
     protected function _getFrontendClass($element)
     {
         return parent::_getFrontendClass($element).' with-button';
     }
 
+    /**
+     * @param $element
+     * @return string
+     */
     protected function _getHeaderTitleHtml($element)
     {
         $html = '<div class="config-heading">';
@@ -37,6 +50,10 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
         return $html;
     }
 
+    /**
+     * @param $element
+     * @return mixed
+     */
     protected function _getExtraJs($element)
     {
         $script = 'require(["jquery", "prototype"], function(jQuery) {
@@ -61,11 +78,19 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
         return $this->_jsHelper->getScript($script);
     }
 
+    /**
+     * @param $element
+     * @return string
+     */
     protected function _getHeaderCommentHtml($element)
     {
         return '';
     }
 
+    /**
+     * @param $element
+     * @return bool
+     */
     protected function _isCollapseState($element)
     {
         return false;

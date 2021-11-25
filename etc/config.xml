@@ -7,6 +7,9 @@
         <title>Satispay</title>
         <active>0</active>
         <sandbox>0</sandbox>
+        <api_url>https://online.satispay.com</api_url>
+        <sandbox_api_url>https://staging.online.satispay.com</sandbox_api_url>
+        <enable_log>1</enable_log>
       </satispay>
     </payment>
   </default>
