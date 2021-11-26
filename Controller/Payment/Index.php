@@ -101,9 +101,9 @@ class Index extends Action
                 $this->logger->logInfo($this->serializer->serialize($apiData));
                 $satispayPayment = Payment::create($apiData);
 
-                $satispayUrl = self::LIVE_API_URL_PATH;
+                $satispayUrl = $this->scopeConfig->getValue(self::LIVE_API_URL_PATH);
                 if (Api::getSandbox()) {
-                    $satispayUrl = self::SANDBOX_API_URL_PATH;
+                    $satispayUrl = $this->scopeConfig->getValue(self::SANDBOX_API_URL_PATH);
                 }
 
                 $this->_redirect(sprintf('%s/pay/%s', $satispayUrl, $satispayPayment->id));
