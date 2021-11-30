@@ -20,6 +20,7 @@ use Satispay\Satispay\Model\Config;
 use Satispay\Satispay\Helper\Logger as SatispayLogger;
 use Magento\Framework\Serialize\Serializer\Json as Serializer;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use \SatispayGBusiness\Api;
 use \SatispayGBusiness\Payment;
 
@@ -80,6 +81,11 @@ class Satispay extends AbstractMethod
     private $orderSender;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
      * Satispay constructor.
      * @param Context $context
      * @param Registry $registry
@@ -94,6 +100,7 @@ class Satispay extends AbstractMethod
      * @param SatispayLogger $satispayLogger
      * @param Serializer $serializer
      * @param OrderSender $orderSender
+     * @param OrderRepositoryInterface $orderRepository
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
      * @param array $data
@@ -112,6 +119,7 @@ class Satispay extends AbstractMethod
         SatispayLogger $satispayLogger,
         Serializer $serializer,
         OrderSender $orderSender,
+        OrderRepositoryInterface $orderRepository,
         AbstractResource $resource = null,
         AbstractDb $resourceCollection = null,
         array $data = []
@@ -134,6 +142,7 @@ class Satispay extends AbstractMethod
         $this->satispayLogger = $satispayLogger;
         $this->serializer = $serializer;
         $this->orderSender = $orderSender;
+        $this->orderRepository = $orderRepository;
 
         Api::setPublicKey($this->config->getPublicKey());
         Api::setPrivateKey($this->config->getPrivateKey());
@@ -184,15 +193,15 @@ class Satispay extends AbstractMethod
     }
 
     /**
-     * @param $orderId
+     * @param string $paymentId
      * @return array|mixed
      */
-    public function checkPayment($orderId) {
+    public function checkPayment($paymentId) {
         $satispayPayment = [];
         try {
 
-            $this->satispayLogger->logInfo(__('Get satispay payment via API: %1', $orderId));
-            $satispayPayment = Payment::get($orderId);
+            $this->satispayLogger->logInfo(__('Get satispay payment via API: %1', $paymentId));
+            $satispayPayment = Payment::get($paymentId);
 
         } catch (\Exception $e) {
             $this->satispayLogger->logError($e->getMessage());
@@ -201,10 +210,11 @@ class Satispay extends AbstractMethod
     }
 
     /**
-     * @param $order
-     * @param $satispayPayment
+     * @param \Magento\Sales\Model\Order $order
+     * @param array $satispayPayment
+     * @throws \Exception
      */
-    public function acceptOrder($order, $satispayPayment) {
+    public function acceptOrder(\Magento\Sales\Model\Order $order, $satispayPayment) {
         $payment = $order->getPayment();
         $payment->setTransactionId($satispayPayment->id);
         $payment->setCurrencyCode($satispayPayment->currency);
@@ -213,7 +223,7 @@ class Satispay extends AbstractMethod
 
         $order->setState($order::STATE_PROCESSING);
         $order->setStatus($order::STATE_PROCESSING);
-        $order->save();
+        $this->orderRepository->save($order);
 
         $this->satispayLogger->logInfo(__('Payment %1 for order %2 accepted', $satispayPayment->id, $order->getIncrementId()));
 
@@ -224,12 +234,13 @@ class Satispay extends AbstractMethod
     }
 
     /**
-     * @param $order
-     * @param $message
+     * @param \Magento\Sales\Model\Order $order
+     * @param string $message
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function cancelOrder($order, $message) {
+    public function cancelOrder(\Magento\Sales\Model\Order $order, $message) {
         $order->registerCancellation($message);
-        $order->save();
+        $this->orderRepository->save($order);
 
         $this->satispayLogger->logInfo(__('Order %1 canceled', $order->getIncrementId()));
     }

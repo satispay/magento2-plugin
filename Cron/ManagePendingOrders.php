@@ -51,8 +51,11 @@ class ManagePendingOrders
 
         $orders = $orders->getItems();
 
+        /**
+         * @var \Magento\Sales\Model\Order $order
+         */
         foreach ($orders as $order) {
-            $satispayPayment = $this->satispay->checkPayment($order->getId());
+            $satispayPayment = $this->satispay->checkPayment($order->getIncrementId());
             switch ($satispayPayment['status']) {
                 case  Satispay::ACCEPTED_STATUS:
                     $this->satispay->acceptOrder($order, $satispayPayment);

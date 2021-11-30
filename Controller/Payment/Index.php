@@ -10,6 +10,7 @@ use Satispay\Satispay\Model\Method\Satispay;
 use Satispay\Satispay\Helper\Logger;
 use Magento\Framework\Serialize\Serializer\Json as Serializer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use \SatispayGBusiness\Payment;
 use \SatispayGBusiness\Api;
 
@@ -49,6 +50,11 @@ class Index extends Action
     protected $scopeConfig;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * Index constructor.
      * @param Context $context
      * @param Session $checkoutSession
@@ -57,6 +63,7 @@ class Index extends Action
      * @param Logger $logger
      * @param Serializer $serializer
      * @param ScopeConfigInterface $scopeConfig
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
         Context $context,
@@ -65,7 +72,8 @@ class Index extends Action
         Satispay $satispay,
         Logger $logger,
         Serializer $serializer,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        OrderRepositoryInterface $orderRepository
     ) {
         parent::__construct($context);
         $this->priceCurrency = $priceCurrency;
@@ -73,6 +81,7 @@ class Index extends Action
         $this->logger = $logger;
         $this->serializer = $serializer;
         $this->scopeConfig = $scopeConfig;
+        $this->orderRepository = $orderRepository;
     }
 
     public function execute()
@@ -100,6 +109,9 @@ class Index extends Action
                 $this->logger->logInfo(__('Create payment on satispay via API'));
                 $this->logger->logInfo($this->serializer->serialize($apiData));
                 $satispayPayment = Payment::create($apiData);
+
+                $order->setData('satispay_payment_id', $satispayPayment->id);
+                $this->orderRepository->save($order);
 
                 $satispayUrl = self::LIVE_API_URL_PATH;
                 if (Api::getSandbox()) {

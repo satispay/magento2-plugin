@@ -8,6 +8,7 @@ use Magento\Sales\Model\Order;
 use \Satispay\Satispay\Model\Method\Satispay;
 use Satispay\Satispay\Helper\Logger;
 use Magento\Framework\Serialize\Serializer\Json as Serializer;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use \SatispayGBusiness\Payment;
 
 /**
@@ -33,19 +34,26 @@ class Index extends Action
     protected $satispay;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * Index constructor.
      * @param Context $context
      * @param Order $order
      * @param Satispay $satispay
      * @param Logger $logger
      * @param Serializer $serializer
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
         Context $context,
         Order $order,
         Satispay $satispay,
         Logger $logger,
-        Serializer $serializer
+        Serializer $serializer,
+        OrderRepositoryInterface $orderRepository
     )
     {
         parent::__construct($context);
@@ -53,6 +61,7 @@ class Index extends Action
         $this->logger = $logger;
         $this->serializer = $serializer;
         $this->satispay = $satispay;
+        $this->orderRepository = $orderRepository;
     }
 
 
@@ -63,7 +72,7 @@ class Index extends Action
             $this->logger->logInfo($this->serializer->serialize($this->getRequest()->getParams()));
 
             $satispayPayment = Payment::get($this->getRequest()->getParam("payment_id"));
-            $order = $this->order->load($satispayPayment->metadata->order_id);
+            $order = $this->orderRepository->get($satispayPayment->metadata->order_id);
 
             if ($order->getState() === $order::STATE_NEW) {
                 if ($satispayPayment->status === Satispay::ACCEPTED_STATUS) {
