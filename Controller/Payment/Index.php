@@ -113,9 +113,9 @@ class Index extends Action
                 $order->setData('satispay_payment_id', $satispayPayment->id);
                 $this->orderRepository->save($order);
 
-                $satispayUrl = self::LIVE_API_URL_PATH;
+                $satispayUrl = $this->scopeConfig->getValue(self::LIVE_API_URL_PATH);
                 if (Api::getSandbox()) {
-                    $satispayUrl = self::SANDBOX_API_URL_PATH;
+                    $satispayUrl = $this->scopeConfig->getValue(self::SANDBOX_API_URL_PATH);
                 }
 
                 $this->_redirect(sprintf('%s/pay/%s', $satispayUrl, $satispayPayment->id));
