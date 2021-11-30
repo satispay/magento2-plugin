@@ -74,7 +74,7 @@ class Index extends Action
             $satispayPayment = Payment::get($this->getRequest()->getParam("payment_id"));
             $order = $this->orderRepository->get($satispayPayment->metadata->order_id);
 
-            if ($order->getState() === $order::STATE_NEW) {
+            if ($order->getState() === Order::STATE_NEW) {
                 if ($satispayPayment->status === Satispay::ACCEPTED_STATUS) {
                     $this->logger->logInfo(__('Payment received with status %1', Satispay::ACCEPTED_STATUS));
                     $this->satispay->acceptOrder($order, $satispayPayment);
