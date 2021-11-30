@@ -211,25 +211,32 @@ class Satispay extends AbstractMethod
 
     /**
      * @param \Magento\Sales\Model\Order $order
-     * @param array $satispayPayment
-     * @throws \Exception
+     * @param stdClass $satispayPayment
+     * @param string $message
      */
-    public function acceptOrder(\Magento\Sales\Model\Order $order, $satispayPayment) {
-        $payment = $order->getPayment();
-        $payment->setTransactionId($satispayPayment->id);
-        $payment->setCurrencyCode($satispayPayment->currency);
-        $payment->setIsTransactionClosed(true);
-        $payment->registerCaptureNotification($satispayPayment->amount_unit / 100, true);
+    public function acceptOrder(\Magento\Sales\Model\Order $order, $satispayPayment, $message = '') {
+        try {
+            if ($message !== '') {
+                $this->satispayLogger->logInfo($message);
+            }
+            $payment = $order->getPayment();
+            $payment->setTransactionId($satispayPayment->id);
+            $payment->setCurrencyCode($satispayPayment->currency);
+            $payment->setIsTransactionClosed(true);
+            $payment->registerCaptureNotification($satispayPayment->amount_unit / 100, true);
 
-        $order->setState($order::STATE_PROCESSING);
-        $order->setStatus($order::STATE_PROCESSING);
-        $this->orderRepository->save($order);
+            $order->setState($order::STATE_PROCESSING);
+            $order->setStatus($order::STATE_PROCESSING);
+            $this->orderRepository->save($order);
 
-        $this->satispayLogger->logInfo(__('Payment %1 for order %2 accepted', $satispayPayment->id, $order->getIncrementId()));
+            $this->satispayLogger->logInfo(__('Payment %1 for order %2 accepted', $satispayPayment->id, $order->getIncrementId()));
 
-        // Payment is OK: send the new order email
-        if (!$order->getEmailSent()) {
-            $this->orderSender->send($order);
+            // Payment is OK: send the new order email
+            if (!$order->getEmailSent()) {
+                $this->orderSender->send($order);
+            }
+        } catch (\Exception $e) {
+            $this->satispayLogger->logError(__('Error saving satispay order %1', $e->getMessage()));
         }
     }
 
@@ -239,10 +246,14 @@ class Satispay extends AbstractMethod
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function cancelOrder(\Magento\Sales\Model\Order $order, $message) {
-        $order->registerCancellation($message);
-        $this->orderRepository->save($order);
+        try {
+            $order->registerCancellation($message);
+            $this->orderRepository->save($order);
 
-        $this->satispayLogger->logInfo(__('Order %1 canceled', $order->getIncrementId()));
+            $this->satispayLogger->logInfo(__('Order %1 canceled', $order->getIncrementId()));
+        } catch (\Exception $e) {
+            $this->satispayLogger->logError(__('Error saving satispay order %1', $e->getMessage()));
+        }
     }
 
     /**

@@ -55,23 +55,26 @@ class ManagePendingOrders
          * @var \Magento\Sales\Model\Order $order
          */
         foreach ($orders as $order) {
-            $satispayPayment = $this->satispay->checkPayment($order->getIncrementId());
-            switch ($satispayPayment['status']) {
-                case  Satispay::ACCEPTED_STATUS:
-                    $this->satispay->acceptOrder($order, $satispayPayment);
-                    break;
-                case  Satispay::CANCELED_STATUS:
-                    $cancelMessage = __('Payment received with status %1.', Satispay::CANCELED_STATUS);
-                    $this->satispay->cancelOrder($order, $cancelMessage);
-                    break;
-                case Satispay::PENDING_STATUS:
-                    if ($satispayPayment['expired']) {
-                        $cancelMessage = __('Payment received with status %1.', Satispay::CANCELED_STATUS);
+            $satispayPayment = $this->satispay->checkPayment($order->getData('satispay_payment_id'));
+            if (!empty($satispayPayment) && property_exists($satispayPayment, 'status')) {
+                switch ($satispayPayment->status) {
+                    case  Satispay::ACCEPTED_STATUS:
+                        $successMessage = __('Payment checked with status %1.', Satispay::ACCEPTED_STATUS);
+                        $this->satispay->acceptOrder($order, $satispayPayment, $successMessage);
+                        break;
+                    case  Satispay::CANCELED_STATUS:
+                        $cancelMessage = __('Payment checked with status %1.', Satispay::CANCELED_STATUS);
                         $this->satispay->cancelOrder($order, $cancelMessage);
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case Satispay::PENDING_STATUS:
+                        if ($satispayPayment->expired) {
+                            $cancelMessage = __('Payment checked with status %1.', Satispay::CANCELED_STATUS);
+                            $this->satispay->cancelOrder($order, $cancelMessage);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
