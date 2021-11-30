@@ -19,6 +19,7 @@ use Magento\Framework\App\ProductMetadataInterfaceFactory;
 use Satispay\Satispay\Model\Config;
 use Satispay\Satispay\Helper\Logger as SatispayLogger;
 use Magento\Framework\Serialize\Serializer\Json as Serializer;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use \SatispayGBusiness\Api;
 use \SatispayGBusiness\Payment;
 
@@ -28,6 +29,11 @@ use \SatispayGBusiness\Payment;
  */
 class Satispay extends AbstractMethod
 {
+
+    const ACCEPTED_STATUS = "ACCEPTED";
+    const CANCELED_STATUS = "CANCELED";
+    const PENDING_STATUS = "PENDING";
+
     /**
      * @var string
      */
@@ -43,6 +49,9 @@ class Satispay extends AbstractMethod
      */
     protected $_canRefundInvoicePartial = true;
 
+    /**
+     * @var Config
+     */
     private $config;
 
     /**
@@ -66,6 +75,11 @@ class Satispay extends AbstractMethod
     private $serializer;
 
     /**
+     * @var OrderSender
+     */
+    private $orderSender;
+
+    /**
      * Satispay constructor.
      * @param Context $context
      * @param Registry $registry
@@ -79,6 +93,7 @@ class Satispay extends AbstractMethod
      * @param PriceCurrencyInterface $priceCurrency
      * @param SatispayLogger $satispayLogger
      * @param Serializer $serializer
+     * @param OrderSender $orderSender
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
      * @param array $data
@@ -96,6 +111,7 @@ class Satispay extends AbstractMethod
         PriceCurrencyInterface $priceCurrency,
         SatispayLogger $satispayLogger,
         Serializer $serializer,
+        OrderSender $orderSender,
         AbstractResource $resource = null,
         AbstractDb $resourceCollection = null,
         array $data = []
@@ -117,6 +133,7 @@ class Satispay extends AbstractMethod
         $this->priceCurrency = $priceCurrency;
         $this->satispayLogger = $satispayLogger;
         $this->serializer = $serializer;
+        $this->orderSender = $orderSender;
 
         Api::setPublicKey($this->config->getPublicKey());
         Api::setPrivateKey($this->config->getPrivateKey());
@@ -159,10 +176,62 @@ class Satispay extends AbstractMethod
             $satispayPayment = Payment::create($apiData);
             $payment->setTransactionId($satispayPayment->id);
 
-            return $this;
         } catch (\Exception $e) {
-            $this->satispayLogger->logError($e->getMessaage());
+            $this->satispayLogger->logError($e->getMessage());
         }
+
+        return $this;
+    }
+
+    /**
+     * @param $orderId
+     * @return array|mixed
+     */
+    public function checkPayment($orderId) {
+        $satispayPayment = [];
+        try {
+
+            $this->satispayLogger->logInfo(__('Get satispay payment via API: %1', $orderId));
+            $satispayPayment = Payment::get($orderId);
+
+        } catch (\Exception $e) {
+            $this->satispayLogger->logError($e->getMessage());
+        }
+        return $satispayPayment;
+    }
+
+    /**
+     * @param $order
+     * @param $satispayPayment
+     */
+    public function acceptOrder($order, $satispayPayment) {
+        $payment = $order->getPayment();
+        $payment->setTransactionId($satispayPayment->id);
+        $payment->setCurrencyCode($satispayPayment->currency);
+        $payment->setIsTransactionClosed(true);
+        $payment->registerCaptureNotification($satispayPayment->amount_unit / 100, true);
+
+        $order->setState($order::STATE_PROCESSING);
+        $order->setStatus($order::STATE_PROCESSING);
+        $order->save();
+
+        $this->satispayLogger->logInfo(__('Payment %1 for order %2 accepted', $satispayPayment->id, $order->getIncrementId()));
+
+        // Payment is OK: send the new order email
+        if (!$order->getEmailSent()) {
+            $this->orderSender->send($order);
+        }
+    }
+
+    /**
+     * @param $order
+     * @param $message
+     */
+    public function cancelOrder($order, $message) {
+        $order->registerCancellation($message);
+        $order->save();
+
+        $this->satispayLogger->logInfo(__('Order %1 canceled', $order->getIncrementId()));
     }
 
     /**

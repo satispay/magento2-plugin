@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="satispay">
+        <job name="satispay_check_pending_payments" instance="Satispay\Satispay\Cron\ManagePendingOrders" method="execute">
+            <schedule>0 0 * * *</schedule>
+        </job>
+    </group>
+</config>
