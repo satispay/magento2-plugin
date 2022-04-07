@@ -23,21 +23,19 @@ class Index extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-        $satispayPayment = \SatispayGBusiness\Payment::get($this->getRequest()->getParam("payment_id"));
-
         $order = $this->checkoutSession->getLastRealOrder();
-        if (!isset($order)) {
-            $this->checkoutSession->restoreQuote();
+
+        if (!isset($order) || !$order->getId()) {
+            // can't collect order from checkout session, payment is still valid and no need to restore cart
+            // can't redirect to success page
             $this->_redirect('checkout/cart');
+            return;
         }
 
+        $paymentId = $order->getPayment()->getLastTransId();
+        $satispayPayment = \SatispayGBusiness\Payment::get($paymentId);
+
         if ($satispayPayment->status == 'ACCEPTED') {
-            $payment = $order->getPayment();
-            if (isset($payment)) {
-                // Set last transition id as the satispay payment id
-                $payment->setLastTransId($satispayPayment->id);
-                $this->orderRepository->save($order);
-            }
             $this->_redirect('checkout/onepage/success');
         } else {
             $order->registerCancellation(__('Payment has been cancelled.'));
