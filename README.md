@@ -5,7 +5,7 @@
 
 ## Installation
 
-Install with composer: `composer require satispay/magento2-plugin` or copy files in `app/code/Satispay/Satispay`
+Install with composer: `composer require satispay/magento2-plugin`
 
 ```bash
 php bin/magento module:enable Satispay_Satispay
