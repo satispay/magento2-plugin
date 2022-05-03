@@ -8,6 +8,12 @@
         </arguments>
     </type>
 
+    <type name="Satispay\Satispay\Command\CompleteUnhandledTransaction">
+        <arguments>
+            <argument name="finalizeUnhandledOrdersService" xsi:type="object">Satispay\Satispay\Model\FinalizeUnhandledOrders\Proxy</argument>
+        </arguments>
+    </type>
+
     <!-- Logger -->
     <virtualType name="Satispay\Satispay\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
