@@ -12,13 +12,10 @@ class FinalizePayment
     protected $orderSender;
 
     /**
-     * Order constructor.
-     * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      * @param \Satispay\Satispay\Model\Method\Satispay $satispay
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \Satispay\Satispay\Model\Method\Satispay $satispay
     ) {

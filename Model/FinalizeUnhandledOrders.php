@@ -48,16 +48,16 @@ class FinalizeUnhandledOrders
     protected $logger;
 
     /**
-     * Order constructor.
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+     * @param \Magento\Sales\Api\OrderStatusHistoryRepositoryInterface $orderStatusRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
      * @param \Satispay\Satispay\Model\Method\Satispay $satispay
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Satispay\Satispay\Model\Config $config
      * @param FinalizePayment $finalizePaymentService
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Magento\Sales\Api\OrderStatusHistoryRepositoryInterface $orderStatusRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
