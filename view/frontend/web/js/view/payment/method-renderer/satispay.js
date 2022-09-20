@@ -7,15 +7,22 @@ define(["Magento_Checkout/js/view/payment/default", "mage/url"], function(
   "use strict";
 
   var checkoutConfig = window.checkoutConfig.payment;
-  console.log(checkoutConfig);
-
   return Component.extend({
-    defaults: {
-      template: "Satispay_Satispay/payment/form",
-      redirectAfterPlaceOrder: false
-    },
-    afterPlaceOrder: function() {
-      window.location.replace(url.build("satispay/payment/"));
-    }
+      defaults: {
+          logo: 'Satispay_Satispay/images/satispay.png',
+          template: "Satispay_Satispay/payment/form",
+          redirectAfterPlaceOrder: false
+      },
+      /**
+       * Returns payment logo image
+       * @returns {String}
+       */
+      getPaymentLogoImage: function () {
+          return require.toUrl(this.logo);
+      },
+
+      afterPlaceOrder: function() {
+          window.location.replace(url.build("satispay/payment/"));
+      }
   });
 });
