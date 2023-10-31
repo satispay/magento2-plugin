@@ -1,32 +1,38 @@
-<div dir="ltr" style="text-align: left;" trbidi="on">
-    <script>
-        <?= $block->escapeHtml($block->getElementId()) ?> = {
-            activationCodeWindow: undefined,
-            openActivationCodeWindow(e) {
-                e.preventDefault()
+<?php
+/** @var \Satispay\Satispay\Model\TemplateHelper $helper */
+$helper = $this->helper(Satispay\Satispay\Model\TemplateHelper::class);
+?>
+<?php if(!empty($helper->getPublicKey())) :?>
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+        <script>
+            <?= $block->escapeHtml($block->getElementId()) ?> = {
+                activationCodeWindow: undefined,
+                openActivationCodeWindow(e) {
+                    e.preventDefault()
 
-                <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindow = window.open('<?= $block->escapeUrl($block->getEndpoint()) ?>/ecommerce-authentication/?public_key=<?= $block->escapeHtml($block->getPublicKey()) ?>&type=magento', 'satispay_ActivationCodeWindow')
+                    <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindow = window.open('<?= $block->escapeUrl($block->getEndpoint()) ?>/ecommerce-authentication/?public_key=<?= $block->escapeHtml($block->getPublicKey()) ?>&type=magento', 'satispay_ActivationCodeWindow')
 
-                window.removeEventListener('message', <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindowMessage)
-                window.addEventListener('message', <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindowMessage, false)
-            },
-            activationCodeWindowMessage(e) {
-                console.log(e)
-
-                if (e.source !== <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindow) {
-                    return
-                }
-
-                if (e.data.action === 'done') {
-                    e.source.close()
                     window.removeEventListener('message', <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindowMessage)
+                    window.addEventListener('message', <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindowMessage, false)
+                },
+                activationCodeWindowMessage(e) {
+                    console.log(e)
 
-                    var inputElement = document.getElementsByName('groups[satispay][fields][<?= $block->escapeHtml($block->getKeyIdFieldName()) ?>][value]')[0]
-                    inputElement.value = e.data.payload.keyID
-                    inputElement.form.submit()
+                    if (e.source !== <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindow) {
+                        return
+                    }
+
+                    if (e.data.action === 'done') {
+                        e.source.close()
+                        window.removeEventListener('message', <?= $block->escapeHtml($block->getElementId()) ?>.activationCodeWindowMessage)
+
+                        var inputElement = document.getElementsByName('groups[satispay][fields][<?= $block->escapeHtml($block->getKeyIdFieldName()) ?>][value]')[0]
+                        inputElement.value = e.data.payload.keyID
+                        inputElement.form.submit()
+                    }
                 }
             }
-        }
-    </script>
-    <a class="button action-default" href="#" onclick="<?= $block->escapeHtml($block->getElementId()) ?>.openActivationCodeWindow(event)"><?= $block->escapeHtml($block->getButtonLabel()) ?></a>
-</div>
+        </script>
+        <a class="button action-default" href="#" onclick="<?= $block->escapeHtml($block->getElementId()) ?>.openActivationCodeWindow(event)"><?= $block->escapeHtml($block->getButtonLabel()) ?></a>
+    </div>
+<?php endif;?>
