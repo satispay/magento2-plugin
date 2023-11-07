@@ -28,6 +28,7 @@
           <attribute type="sandbox">0</attribute>
           <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\ActivationCode</frontend_model>
           <depends>
+            <field id="active">1</field>
             <field id="sandbox">0</field>
           </depends>
         </field>
@@ -44,6 +45,7 @@
           <attribute type="sandbox">1</attribute>
           <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\ActivationCode</frontend_model>
           <depends>
+            <field id="active">1</field>
             <field id="sandbox">1</field>
           </depends>
         </field>
@@ -56,19 +58,19 @@
         </field>
 
         <field id="finalize_unhandled_transactions" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-           <label>Cron to finalize unhandled payments</label>
-           <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-           <depends>
-             <field id="active">1</field>
-           </depends>
+          <label>Cron to finalize unhandled payments</label>
+          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+          <depends>
+            <field id="active">1</field>
+          </depends>
         </field>
         <field id="finalize_max_hours" translate="label" type="text" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="1">
-           <label>Finalize all orders updated since</label>
-           <comment>Choose a number of hours, default is four minimum is one</comment>
-           <validate>validate-digits validate-digits-range digits-range-1-65535</validate>
-           <depends>
-             <field id="active">1</field>
-           </depends>
+          <label>Finalize all orders updated since</label>
+          <comment>Choose a number of hours, default is four minimum is one</comment>
+          <validate>validate-digits validate-digits-range digits-range-1-65535</validate>
+          <depends>
+            <field id="active">1</field>
+          </depends>
         </field>
 
         <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
