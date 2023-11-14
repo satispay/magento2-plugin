@@ -1,7 +1,7 @@
 {
     "name": "satispay/magento2-plugin",
     "description": "Satispay Magento2 Plugin",
-    "type": "mangento2-module",
+    "type": "magento2-module",
     "license": "MIT",
     "version": "2.1.2",
 
