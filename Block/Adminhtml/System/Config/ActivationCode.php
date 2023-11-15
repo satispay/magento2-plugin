@@ -45,7 +45,11 @@ class ActivationCode extends \Magento\Config\Block\System\Config\Form\Field
             $keyIdFieldName = "sandbox_key_id";
         }
 
-        $publicKey = base64_encode($this->config->getPublicKey());
+        $publicKey = $this->config->getPublicKey();
+        if (!is_null($publicKey)) {
+            $publicKey = base64_encode($publicKey);
+        }
+        
         $buttonLabel = __($originalData["button_label"]);
         
         $this->addData(
