@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Satispay\Satispay\Model;
-
 
 use Psr\Log\LoggerInterface;
 
@@ -88,7 +86,7 @@ class FinalizeUnhandledOrders
             $rangeEnd = $this->getEndDateScheduledTime();
 
             $searchCriteria = $this->searchCriteriaBuilder
-                ->addFilter('state', \Magento\Sales\Model\Order::STATE_NEW)
+                ->addFilter('state', [\Magento\Sales\Model\Order::STATE_NEW, \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT], 'in')
                 ->addFilter('store_id', $storeId)
                 ->addFilter('updated_at', $rangeStart, 'gteq')
                 ->addFilter('updated_at', $rangeEnd, 'lteq')
@@ -119,7 +117,7 @@ class FinalizeUnhandledOrders
         $orderId = $order->getEntityId();
         $payment = $order->getPayment();
         $satispayPaymentId = $payment->getLastTransId();
-        if(isset($satispayPaymentId)) {
+        if (isset($satispayPaymentId)) {
             $satispayPayment = \SatispayGBusiness\Payment::get($satispayPaymentId);
             $hasBeenFinalized = $this->finalizePaymentService->finalizePayment($satispayPayment, $order);
             if ($hasBeenFinalized) {
