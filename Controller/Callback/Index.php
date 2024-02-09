@@ -5,9 +5,7 @@ namespace Satispay\Satispay\Controller\Callback;
 class Index extends \Magento\Framework\App\Action\Action
 {
     protected $checkoutSession;
-
     protected $orderSender;
-
     protected $finalizePaymentService;
 
     public function __construct(
@@ -29,7 +27,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $satispayPayment = \SatispayGBusiness\Payment::get($this->getRequest()->getParam("payment_id"));
         $order = $this->order->load($satispayPayment->metadata->order_id);
 
-        if ($order->getState() == $order::STATE_NEW) {
+        if ($order->getState() == $order::STATE_NEW || $order->getState() == $order::STATE_PENDING_PAYMENT) {
             $this->finalizePaymentService->finalizePayment($satispayPayment, $order);
         }
 

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Satispay\Satispay\Model;
-
 
 class FinalizePayment
 {
@@ -12,14 +10,21 @@ class FinalizePayment
     protected $orderSender;
 
     /**
+     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      * @param \Satispay\Satispay\Model\Method\Satispay $satispay
      */
     public function __construct(
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \Satispay\Satispay\Model\Method\Satispay $satispay
+        \Satispay\Satispay\Model\Method\Satispay $satispay,
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
     ) {
         $this->orderSender = $orderSender;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -40,7 +45,7 @@ class FinalizePayment
 
             $order->setState($order::STATE_PROCESSING);
             $order->setStatus($order::STATE_PROCESSING);
-            $order->save();
+            $this->orderRepository->save($order);
 
             // Payment is OK: send the new order email
             if (!$order->getEmailSent()) {
@@ -50,7 +55,7 @@ class FinalizePayment
         }
         if ($satispayPayment->status == 'CANCELED') {
             $order->registerCancellation(__('Payment received with status CANCELED.'));
-            $order->save();
+            $this->orderRepository->save($order);
             return true;
         }
 
