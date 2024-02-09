@@ -21,27 +21,30 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->orderRepository = $orderRepository;
     }
 
-    public function execute()
-    {
-        $order = $this->checkoutSession->getLastRealOrder();
+public function execute()
+{
+    $order = $this->checkoutSession->getLastRealOrder();
 
-        if (!isset($order) || !$order->getId()) {
-            // can't collect order from checkout session, payment is still valid and no need to restore cart
-            // can't redirect to success page
-            $this->_redirect('checkout/cart');
-            return;
-        }
-
-        $paymentId = $order->getPayment()->getLastTransId();
-        $satispayPayment = \SatispayGBusiness\Payment::get($paymentId);
-
-        if ($satispayPayment->status == 'ACCEPTED') {
-            $this->_redirect('checkout/onepage/success');
-        } else {
-            $order->registerCancellation(__('Payment has been cancelled.'));
-            $this->orderRepository->save($order);
-            $this->checkoutSession->restoreQuote();
-            $this->_redirect('checkout/cart');
-        }
+    if (!isset($order) || !$order->getId()) {
+        // can't collect order from checkout session, payment is still valid and no need to restore cart
+        // can't redirect to success page
+        $this->_redirect('checkout/cart');
+        return;
     }
+
+    $paymentId = $order->getPayment()->getLastTransId();
+    $satispayPayment = \SatispayGBusiness\Payment::get($paymentId);
+
+    if ($satispayPayment->status == 'ACCEPTED') {
+        $this->_redirect('checkout/onepage/success');
+    } elseif ($satispayPayment->status == 'PENDING') {
+        // If payment status is 'PENDING', keep the order status as 'Pending'
+        
+    } else {
+        $order->registerCancellation(__('Payment has been cancelled.'));
+        $this->orderRepository->save($order);
+        $this->checkoutSession->restoreQuote();
+        $this->_redirect('checkout/cart');
+    }
+}
 }
