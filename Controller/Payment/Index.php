@@ -27,6 +27,8 @@ class Index extends \Magento\Framework\App\Action\Action
         $order = $this->checkoutSession->getLastRealOrder();
 
         if ($order->getState() == $order::STATE_NEW) {
+            $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT)->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
+            $this->orderRepository->save($order);
             $satispayPayment = \SatispayGBusiness\Payment::create([
                 "flow" => "MATCH_CODE",
                 "amount_unit" => $order->getGrandTotal() * 100,

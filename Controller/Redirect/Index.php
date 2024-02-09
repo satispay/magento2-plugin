@@ -2,23 +2,24 @@
 
 namespace Satispay\Satispay\Controller\Redirect;
 
-
 class Index extends \Magento\Framework\App\Action\Action
 {
     protected $checkoutSession;
-
     protected $orderRepository;
+    protected $messageManager;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Satispay\Satispay\Model\Method\Satispay $satispay,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \Magento\Framework\Message\ManagerInterface $messageManager,
     )
     {
         parent::__construct($context);
         $this->checkoutSession = $checkoutSession;
         $this->orderRepository = $orderRepository;
+        $this->messageManager = $messageManager;
     }
 
 public function execute()
@@ -35,15 +36,19 @@ public function execute()
     $paymentId = $order->getPayment()->getLastTransId();
     $satispayPayment = \SatispayGBusiness\Payment::get($paymentId);
 
-    if ($satispayPayment->status == 'ACCEPTED') {
-        $this->_redirect('checkout/onepage/success');
-    } elseif ($satispayPayment->status == 'PENDING') {
-        // If payment status is 'PENDING', keep the order status as 'Pending'
-        
-    } else {
+        if ($satispayPayment->status == 'ACCEPTED') {
+            $this->_redirect('checkout/onepage/success');
+            return;
+        }
+        if ($satispayPayment->status == 'PENDING') {
+            $this->messageManager->addWarningMessage(__('Payment is pending.'));
+            $this->_redirect('checkout/cart');
+            return;
+        }
         $order->registerCancellation(__('Payment has been cancelled.'));
         $this->orderRepository->save($order);
         $this->checkoutSession->restoreQuote();
+        $this->messageManager->addWarningMessage(__('Payment has been cancelled.'));
         $this->_redirect('checkout/cart');
     }
 }

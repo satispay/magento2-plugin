@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.0
+- Change flow for PENDING payments coming from Satispay API
+- 
 ## 2.1.2
 - Fixed bug regarding the <public_key> parameter. If the user didn't flush the cache after enabling the Plugin, the website threw an error. 
 - Now the user has to: Enable the Plugin > Save the configuration > Set the token
