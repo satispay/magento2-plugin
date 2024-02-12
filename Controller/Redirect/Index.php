@@ -52,4 +52,4 @@ public function execute()
         $this->_redirect('checkout/cart');
     }
 }
-}
+
