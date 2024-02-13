@@ -4,7 +4,6 @@ namespace Satispay\Satispay\Block\Adminhtml\System\Config;
 class ActivationCode extends \Magento\Config\Block\System\Config\Form\Field
 {
     const TEMPLATE = 'Satispay_Satispay::system/config/activation_code.phtml';
-
     private $config;
 
     public function __construct(
@@ -45,18 +44,22 @@ class ActivationCode extends \Magento\Config\Block\System\Config\Form\Field
             $keyIdFieldName = "sandbox_key_id";
         }
 
-        $publicKey = base64_encode($this->config->getPublicKey());
-        $buttonLabel = __($originalData["button_label"]);
-        
-        $this->addData(
-            [
-                "button_label" => $buttonLabel,
-                "endpoint" => $endpoint,
-                "key_id_field_name" => $keyIdFieldName,
-                "public_key" => $publicKey,
-                "element_id" => $element->getId()
-            ]
-        );
+        try {
+            $publicKey = base64_encode($this->config->getPublicKey());
+            $buttonLabel = __($originalData["button_label"]);
+
+            $this->addData(
+                [
+                    "button_label" => $buttonLabel,
+                    "endpoint" => $endpoint,
+                    "key_id_field_name" => $keyIdFieldName,
+                    "public_key" => $publicKey,
+                    "element_id" => $element->getId()
+                ]
+            );
+        } catch (\Exception $e) {
+            //base64 error when first loading the page
+        }
 
         return $this->_toHtml();
     }

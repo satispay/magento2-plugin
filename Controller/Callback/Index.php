@@ -7,6 +7,7 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $checkoutSession;
     protected $orderSender;
     protected $finalizePaymentService;
+    protected $order;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,

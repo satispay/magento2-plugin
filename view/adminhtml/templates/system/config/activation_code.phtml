@@ -35,4 +35,8 @@ $helper = $this->helper(Satispay\Satispay\Model\TemplateHelper::class);
         </script>
         <a class="button action-default" href="#" onclick="<?= $block->escapeHtml($block->getElementId()) ?>.openActivationCodeWindow(event)"><?= $block->escapeHtml($block->getButtonLabel()) ?></a>
     </div>
+<?php else:?>
+    <div dir="ltr" style="text-align: left;" trbidi="on" class="admin__field-error">
+        <span>Please reload the page to be able to activate the module.</span>
+    </div>
 <?php endif;?>
