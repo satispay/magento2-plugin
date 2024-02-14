@@ -6,15 +6,18 @@ class Config
     private $config;
     private $scopeConfig;
     private $encryptor;
+    private $cacheManager;
 
     public function __construct(
         \Magento\Framework\App\Config\ConfigResource\ConfigInterface $config,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        \Magento\Framework\App\Cache\Manager $cacheManager
     ) {
         $this->config = $config;
         $this->scopeConfig = $scopeConfig;
         $this->encryptor = $encryptor;
+        $this->cacheManager = $cacheManager;
     }
 
     public function generateKeys($storeId = "default")
@@ -43,6 +46,7 @@ class Config
             $this->encryptor->encrypt($generatedPrivateKey),
             $storeId
         );
+        $this->cacheManager->flush(['config']);
     }
 
     public function getPublicKey($storeId = "default")
