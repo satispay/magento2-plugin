@@ -41,10 +41,26 @@ public function execute()
             return;
         }
         if ($satispayPayment->status == 'PENDING') {
-            $this->messageManager->addWarningMessage(__('Payment is pending.'));
+
+            $satispayCancel = \SatispayGBusiness\Payment::update($paymentId, [
+                'action' => 'CANCEL',
+            ]);
+
+            echo $satispayCancel->status;
+
+            if ($satispayCancel->status === 'CANCELED') {
+                $order->registerCancellation(__('Payment has been cancelled.'));
+                $this->orderRepository->save($order);
+                $this->checkoutSession->restoreQuote();
+            } else {
+                $this->messageManager->addWarningMessage(__('Payment is pending.'));
+            }
+
             $this->_redirect('checkout/cart');
+
             return;
         }
+
         $order->registerCancellation(__('Payment has been cancelled.'));
         $this->orderRepository->save($order);
         $this->checkoutSession->restoreQuote();
