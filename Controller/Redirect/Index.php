@@ -45,8 +45,7 @@ public function execute()
             $satispayCancel = \SatispayGBusiness\Payment::update($paymentId, [
                 'action' => 'CANCEL',
             ]);
-
-            echo $satispayCancel->status;
+            
 
             if ($satispayCancel->status === 'CANCELED') {
                 $order->registerCancellation(__('Payment has been cancelled.'));
