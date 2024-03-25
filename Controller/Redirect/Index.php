@@ -40,12 +40,13 @@ public function execute()
             $this->_redirect('checkout/onepage/success');
             return;
         }
-        if ($satispayPayment->status == 'PENDING') {
+        
+         if ($satispayPayment->status == 'PENDING') {
 
             $satispayCancel = \SatispayGBusiness\Payment::update($paymentId, [
                 'action' => 'CANCEL',
             ]);
-            
+
 
             if ($satispayCancel->status === 'CANCELED') {
                 $order->registerCancellation(__('Payment has been cancelled.'));
