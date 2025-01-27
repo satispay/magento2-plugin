@@ -1,28 +1,34 @@
 <?php
 namespace Satispay\Satispay\Model;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
-class TemplateHelper extends \Magento\Framework\App\Helper\AbstractHelper
+class TemplateHelper extends AbstractHelper
 {
-    protected $config;
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $scopeConfig;
-    protected $encryptor;
 
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Context $context
+     */
     public function __construct(
-        \Magento\Framework\App\Config\ConfigResource\ConfigInterface $config,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        ScopeConfigInterface $scopeConfig,
         Context $context
     ) {
-        $this->config = $config;
         $this->scopeConfig = $scopeConfig;
-        $this->encryptor = $encryptor;
         parent::__construct($context);
     }
 
-    public function getPublicKey($storeId = "default")
+    public function getPublicKey()
     {
-        return $this->scopeConfig->getValue("payment/satispay/public_key", $storeId);
+        return $this->scopeConfig->getValue("payment/satispay/public_key",
+            ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            0
+        );
     }
 }

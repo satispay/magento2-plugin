@@ -2,25 +2,52 @@
 
 namespace Satispay\Satispay\Model\Method;
 
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Payment\Helper\Data;
+use Magento\Payment\Model\InfoInterface;
+use Magento\Payment\Model\Method\Logger;
+use Magento\Store\Model\StoreManagerInterface;
+use Satispay\Satispay\Model\Config;
+use SatispayGBusiness\Api;
+
 class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
 {
     protected $_code = 'satispay';
     protected $_canRefund = true;
     protected $_canRefundInvoicePartial = true;
-
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+    /**
+     * @var ProductMetadataInterface
+     */
+    protected $productMetadata;
+    /**
+     * @var Config
+     */
     private $config;
 
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
-        \Satispay\Satispay\Model\Config $config,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        StoreManagerInterface $storeManager,
+        ProductMetadataInterface $productMetadata,
+        Context $context,
+        Registry $registry,
+        ExtensionAttributesFactory $extensionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        Data $paymentData,
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger,
+        Config $config,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     )
     {
@@ -37,27 +64,25 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
             $data
         );
         $this->config = $config;
+        $this->storeManager = $storeManager;
+        $this->productMetadata = $productMetadata;
 
-        \SatispayGBusiness\Api::setPublicKey($this->config->getPublicKey());
-        \SatispayGBusiness\Api::setPrivateKey($this->config->getPrivateKey());
+        Api::setPublicKey($this->config->getPublicKey());
+        Api::setPrivateKey($this->config->getPrivateKey());
 
-        if ($this->config->getSandbox()) {
-            \SatispayGBusiness\Api::setKeyId($this->config->getSandboxKeyId());
-            \SatispayGBusiness\Api::setSandbox(true);
+        if ($this->config->getSandbox($this->storeManager->getStore()->getWebsiteId())) {
+            Api::setKeyId($this->config->getSandboxKeyId($this->storeManager->getStore()->getWebsiteId()));
+            Api::setSandbox(true);
         } else {
-            \SatispayGBusiness\Api::setKeyId($this->config->getKeyId());
+            Api::setKeyId($this->config->getKeyId($this->storeManager->getStore()->getWebsiteId()));
         }
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $productMetadata = $objectManager->get(\Magento\Framework\App\ProductMetadataInterface::class);
-        $version = $productMetadata->getVersion();
-
-        \SatispayGBusiness\Api::setPluginNameHeader('Magento2');
-        \SatispayGBusiness\Api::setPlatformVersionHeader($version);
-        \SatispayGBusiness\Api::setTypeHeader('ECOMMERCE-PLUGIN');
+        Api::setPluginNameHeader('Magento2');
+        Api::setPlatformVersionHeader($this->productMetadata->getVersion());
+        Api::setTypeHeader('ECOMMERCE-PLUGIN');
     }
 
-    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    public function refund(InfoInterface $payment, $amount)
     {
         $order = $payment->getOrder();
 
@@ -83,5 +108,29 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
     public function getOrderPlaceRedirectUrl()
     {
         return true;
+    }
+
+    /**
+     * Set keyId and sandbox based on store being processed by cron
+     *
+     * @param $websiteId
+     * @return void
+     */
+    public function setCronConfigurationsByWebsite($websiteId)
+    {
+        Api::setPublicKey($this->config->getPublicKey());
+        Api::setPrivateKey($this->config->getPrivateKey());
+
+        if ($this->config->getSandbox($websiteId)) {
+            Api::setKeyId($this->config->getSandboxKeyId($websiteId));
+            Api::setSandbox(true);
+        } else {
+            Api::setKeyId($this->config->getKeyId($websiteId));
+            Api::setSandbox(false);
+        }
+
+        Api::setPluginNameHeader('Magento2');
+        Api::setPlatformVersionHeader($this->productMetadata->getVersion());
+        Api::setTypeHeader('ECOMMERCE-PLUGIN');
     }
 }
