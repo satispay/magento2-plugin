@@ -1,14 +1,27 @@
 <?php
 namespace Satispay\Satispay\Block\Adminhtml\System\Config;
 
-class ActivationCode extends \Magento\Config\Block\System\Config\Form\Field
+use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+use Satispay\Satispay\Model\Config;
+
+class ActivationCode extends Field
 {
     const TEMPLATE = 'Satispay_Satispay::system/config/activation_code.phtml';
+    /**
+     * @var Config
+     */
     private $config;
 
+    /**
+     * @param Context $context
+     * @param Config $config
+     * @param array $data
+     */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Satispay\Satispay\Model\Config $config,
+        Context $context,
+        Config $config,
         array $data = []
     ) {
         $this->config = $config;
@@ -24,13 +37,13 @@ class ActivationCode extends \Magento\Config\Block\System\Config\Form\Field
         return $this;
     }
 
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
 
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element)
     {
         $originalData = $element->getOriginalData();
 

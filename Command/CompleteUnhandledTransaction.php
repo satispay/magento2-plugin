@@ -4,6 +4,8 @@
 namespace Satispay\Satispay\Command;
 
 use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
+use Satispay\Satispay\Model\FinalizeUnhandledOrders;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,19 +13,27 @@ use Psr\Log\LoggerInterface;
 
 class CompleteUnhandledTransaction extends Command
 {
-
+    /**
+     * @var FinalizeUnhandledOrders
+     */
     protected $finalizeUnhandledOrdersService;
-
+    /**
+     * @var State
+     */
     protected $appState;
-
     /**
      * @var LoggerInterface
      */
     protected $logger;
 
+    /**
+     * @param FinalizeUnhandledOrders $finalizeUnhandledOrdersService
+     * @param State $appState
+     * @param LoggerInterface $logger
+     */
     public function __construct(
-        \Satispay\Satispay\Model\FinalizeUnhandledOrders $finalizeUnhandledOrdersService,
-        \Magento\Framework\App\State $appState,
+        FinalizeUnhandledOrders $finalizeUnhandledOrdersService,
+        State $appState,
         LoggerInterface $logger
     ) {
         $this->finalizeUnhandledOrdersService = $finalizeUnhandledOrdersService;

@@ -2,18 +2,35 @@
 
 namespace Satispay\Satispay\Controller\Payment;
 
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
+use Psr\Log\LoggerInterface;
+use Satispay\Satispay\Model\Method\Satispay;
+use SatispayGBusiness\Payment;
+
 class Index extends \Magento\Framework\App\Action\Action
 {
+    /**
+     * @var Session
+     */
     protected $checkoutSession;
+    /**
+     * @var OrderRepositoryInterface
+     */
     protected $orderRepository;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Satispay\Satispay\Model\Method\Satispay $satispay,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Psr\Log\LoggerInterface $logger
+        Context $context,
+        Session $checkoutSession,
+        Satispay $satispay,
+        OrderRepositoryInterface $orderRepository,
+        LoggerInterface $logger
     )
     {
         parent::__construct($context);
@@ -27,9 +44,9 @@ class Index extends \Magento\Framework\App\Action\Action
         $order = $this->checkoutSession->getLastRealOrder();
 
         if ($order->getState() == $order::STATE_NEW) {
-            $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT)->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
+            $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
             $this->orderRepository->save($order);
-            $satispayPayment = \SatispayGBusiness\Payment::create([
+            $satispayPayment = Payment::create([
                 "flow" => "MATCH_CODE",
                 "amount_unit" => $order->getGrandTotal() * 100,
                 "currency" => $order->getOrderCurrencyCode(),

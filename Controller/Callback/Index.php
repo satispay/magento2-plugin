@@ -2,19 +2,42 @@
 
 namespace Satispay\Satispay\Controller\Callback;
 
-class Index extends \Magento\Framework\App\Action\Action
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Satispay\Satispay\Model\FinalizePayment;
+use Satispay\Satispay\Model\Method\Satispay;
+use SatispayGBusiness\Payment;
+
+class Index extends Action
 {
-    protected $checkoutSession;
+    /**
+     * @var OrderSender
+     */
     protected $orderSender;
+    /**
+     * @var FinalizePayment
+     */
     protected $finalizePaymentService;
+    /**
+     * @var Order
+     */
     protected $order;
 
+    /**
+     * @param Context $context
+     * @param Order $order
+     * @param OrderSender $orderSender
+     * @param Satispay $satispay
+     * @param FinalizePayment $finalizePaymentService
+     */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Sales\Model\Order $order,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \Satispay\Satispay\Model\Method\Satispay $satispay,
-        \Satispay\Satispay\Model\FinalizePayment $finalizePaymentService
+        Context $context,
+        Order $order,
+        OrderSender $orderSender,
+        Satispay $satispay,
+        FinalizePayment $finalizePaymentService
     )
     {
         parent::__construct($context);
@@ -25,7 +48,7 @@ class Index extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-        $satispayPayment = \SatispayGBusiness\Payment::get($this->getRequest()->getParam("payment_id"));
+        $satispayPayment = Payment::get($this->getRequest()->getParam("payment_id"));
         $order = $this->order->load($satispayPayment->metadata->order_id);
 
         if ($order->getState() == $order::STATE_NEW || $order->getState() == $order::STATE_PENDING_PAYMENT) {

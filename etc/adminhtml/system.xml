@@ -17,7 +17,22 @@
           <label>Title</label>
         </field>
 
-        <field id="sandbox" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="sandbox_key_id" translate="label" type="hidden" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+          <label>Sandbox Key ID</label>
+          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Hidden</frontend_model>
+          <depends>
+            <field id="sandbox">1</field>
+          </depends>
+        </field>
+        <field id="key_id" translate="label" type="hidden" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+          <label>Key ID</label>
+          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Hidden</frontend_model>
+          <depends>
+            <field id="sandbox">0</field>
+          </depends>
+        </field>
+
+        <field id="sandbox" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="0">
           <label>Sandbox</label>
           <comment>
             <![CDATA[Set this to "Yes" to test payments - Please note: A <a href="https://satispay-sandbox.paperform.co/" target="_blank">Sandbox</a> account is required for this option]]>
@@ -25,7 +40,7 @@
           <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
         </field>
 
-        <field id="activation_code" translate="button_label attribute" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="activation_code" translate="button_label attribute" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
           <attribute type="button_label">Configure with an Activation Code</attribute>
           <attribute type="sandbox">0</attribute>
           <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\ActivationCode</frontend_model>
@@ -34,27 +49,12 @@
             <field id="sandbox">0</field>
           </depends>
         </field>
-        <field id="key_id" translate="label" type="hidden" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
-          <label>Key ID</label>
-          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Hidden</frontend_model>
-          <depends>
-            <field id="sandbox">0</field>
-          </depends>
-        </field>
-
-        <field id="sandbox_activation_code" translate="button_label attribute" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="sandbox_activation_code" translate="button_label attribute" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="0">
           <attribute type="button_label">Configure with a Sandbox Activation Code</attribute>
           <attribute type="sandbox">1</attribute>
           <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\ActivationCode</frontend_model>
           <depends>
             <field id="active">1</field>
-            <field id="sandbox">1</field>
-          </depends>
-        </field>
-        <field id="sandbox_key_id" translate="label" type="hidden" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
-          <label>Sandbox Key ID</label>
-          <frontend_model>Satispay\Satispay\Block\Adminhtml\System\Config\Hidden</frontend_model>
-          <depends>
             <field id="sandbox">1</field>
           </depends>
         </field>
@@ -75,7 +75,7 @@
           </depends>
         </field>
 
-        <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+        <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
           <label>Sort Order</label>
           <frontend_class>validate-number</frontend_class>
         </field>

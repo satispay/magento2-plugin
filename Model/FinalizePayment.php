@@ -2,26 +2,29 @@
 
 namespace Satispay\Satispay\Model;
 
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+
 class FinalizePayment
 {
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     * @var OrderSender
      */
     protected $orderSender;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
     /**
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
-     * @param \Satispay\Satispay\Model\Method\Satispay $satispay
+     * @param OrderSender $orderSender
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \Satispay\Satispay\Model\Method\Satispay $satispay,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+        OrderSender $orderSender,
+        OrderRepositoryInterface $orderRepository
     ) {
         $this->orderSender = $orderSender;
         $this->orderRepository = $orderRepository;
@@ -31,10 +34,10 @@ class FinalizePayment
      * Finalize a Magento 2 Order Payment following the Satispay Payment Data
      *
      * @param $satispayPayment
-     * @param \Magento\Sales\Model\Order $order
+     * @param Order $order
      * @return bool
      */
-    public function finalizePayment($satispayPayment, \Magento\Sales\Model\Order $order)
+    public function finalizePayment($satispayPayment, Order $order)
     {
         if ($satispayPayment->status == 'ACCEPTED') {
             $payment = $order->getPayment();

@@ -1,18 +1,42 @@
 <?php
 namespace Satispay\Satispay\Model;
 
+use Magento\Framework\App\Cache\Manager;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Model\ScopeInterface;
+
 class Config
 {
+    /**
+     * @var ConfigInterface
+     */
     private $config;
+    /**
+     * @var ScopeConfigInterface
+     */
     private $scopeConfig;
+    /**
+     * @var EncryptorInterface
+     */
     private $encryptor;
+    /**
+     * @var Manager
+     */
     private $cacheManager;
 
+    /**
+     * @param ConfigInterface $config
+     * @param ScopeConfigInterface $scopeConfig
+     * @param EncryptorInterface $encryptor
+     * @param Manager $cacheManager
+     */
     public function __construct(
-        \Magento\Framework\App\Config\ConfigResource\ConfigInterface $config,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
-        \Magento\Framework\App\Cache\Manager $cacheManager
+        ConfigInterface $config,
+        ScopeConfigInterface $scopeConfig,
+        EncryptorInterface $encryptor,
+        Manager $cacheManager
     ) {
         $this->config = $config;
         $this->scopeConfig = $scopeConfig;
@@ -20,7 +44,7 @@ class Config
         $this->cacheManager = $cacheManager;
     }
 
-    public function generateKeys($storeId = "default")
+    public function generateKeys()
     {
         $pkeyResource = openssl_pkey_new([
             "digest_alg" => "sha256",
@@ -40,58 +64,82 @@ class Config
         // $generatedPublicKey = str_replace("-----BEGIN PUBLIC KEY-----", "", $generatedPublicKey);
         // $generatedPublicKey = str_replace("-----END PUBLIC KEY-----", "", $generatedPublicKey);
 
-        $this->config->saveConfig("payment/satispay/public_key", $generatedPublicKey, $storeId);
+        $this->config->saveConfig(
+            "payment/satispay/public_key",
+            $generatedPublicKey
+        );
         $this->config->saveConfig(
             "payment/satispay/private_key",
-            $this->encryptor->encrypt($generatedPrivateKey),
-            $storeId
+            $this->encryptor->encrypt($generatedPrivateKey)
         );
+
         $this->cacheManager->flush(['config']);
     }
 
-    public function getPublicKey($storeId = "default")
+    public function getPublicKey()
     {
-        $publicKey = $this->scopeConfig->getValue("payment/satispay/public_key", $storeId);
+        $publicKey = $this->scopeConfig->getValue("payment/satispay/public_key",
+            ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            0
+        );
+
         if (empty($publicKey)) {
-            $this->generateKeys($storeId);
-            $publicKey = $this->scopeConfig->getValue("payment/satispay/public_key", $storeId);
+            $this->generateKeys();
+            $publicKey = $this->scopeConfig->getValue("payment/satispay/public_key",
+                ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                0
+            );
         }
 
         return $publicKey;
     }
 
-    public function getPrivateKey($storeId = "default")
+    public function getPrivateKey()
     {
-        $privateKey = $this->scopeConfig->getValue("payment/satispay/private_key", $storeId);
+        $privateKey = $this->scopeConfig->getValue("payment/satispay/private_key",
+            ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            0
+        );
         if (empty($privateKey)) {
-            $this->generateKeys($storeId);
-            $privateKey = $this->scopeConfig->getValue("payment/satispay/private_key", $storeId);
+            $this->generateKeys();
+            $privateKey = $this->scopeConfig->getValue("payment/satispay/private_key",
+                ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                0
+            );
         }
 
         return $this->encryptor->decrypt($privateKey);
     }
 
-    public function getSandbox($storeId = "default")
+    public function getSandbox($websiteId)
     {
-        return $this->scopeConfig->getValue("payment/satispay/sandbox", $storeId);
+        return $this->scopeConfig->getValue("payment/satispay/sandbox",
+            ScopeInterface::SCOPE_WEBSITES,
+            $websiteId
+        );
     }
 
-    public function getKeyId($storeId = "default")
+    public function getKeyId($websiteId)
     {
-        return $this->scopeConfig->getValue("payment/satispay/key_id", $storeId);
+        return $this->scopeConfig->getValue("payment/satispay/key_id",
+            ScopeInterface::SCOPE_WEBSITES,
+            $websiteId
+        );
     }
 
-    public function getSandboxKeyId($storeId = "default")
+    public function getSandboxKeyId($websiteId)
     {
-        return $this->scopeConfig->getValue("payment/satispay/sandbox_key_id", $storeId);
+        return $this->scopeConfig->getValue("payment/satispay/sandbox_key_id",
+            ScopeInterface::SCOPE_WEBSITES,
+            $websiteId
+        );
     }
 
     public function getActive($storeId)
     {
-
         return $this->scopeConfig->getValue(
             "payment/satispay/active",
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -100,7 +148,7 @@ class Config
     {
         return $this->scopeConfig->getValue(
             "payment/satispay/finalize_unhandled_transactions",
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -109,7 +157,7 @@ class Config
     {
         return $this->scopeConfig->getValue(
             "payment/satispay/finalize_max_hours",
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
