@@ -75,6 +75,12 @@
           </depends>
         </field>
 
+        <field id="debug_enable" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+          <label>Enable Debug Mode</label>
+          <comment>Activate logs to custom file satispay.log</comment>
+          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+
         <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
           <label>Sort Order</label>
           <frontend_class>validate-number</frontend_class>

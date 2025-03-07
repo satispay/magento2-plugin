@@ -161,4 +161,13 @@ class Config
             $storeId
         );
     }
+
+    public function isDebugEnabled($websiteId)
+    {
+        return $this->scopeConfig->getValue(
+            "payment/satispay/debug_enable",
+            ScopeInterface::SCOPE_WEBSITES,
+            $websiteId
+        );
+    }
 }

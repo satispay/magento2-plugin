@@ -4,6 +4,7 @@ namespace Satispay\Satispay\Model;
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\OrderStatusHistoryRepositoryInterface;
 use Magento\Sales\Model\Order;
@@ -127,6 +128,17 @@ class FinalizeUnhandledOrders
         $satispayPaymentId = $payment->getLastTransId();
         if (isset($satispayPaymentId)) {
             $satispayPayment = Payment::get($satispayPaymentId);
+
+            try {
+                $currentWebsiteId = $this->storeManager->getStore($order->getStoreId())->getWebsiteId();
+            } catch (NoSuchEntityException $e) {
+                $currentWebsiteId = 0;
+            }
+
+            if ($this->config->isDebugEnabled($currentWebsiteId)) {
+                $this->logger->debug('SATISPAY CRON, PAYMENT GET: ' . json_encode($satispayPayment));
+            }
+
             $hasBeenFinalized = $this->finalizePaymentService->finalizePayment($satispayPayment, $order);
             if ($hasBeenFinalized) {
                 $this->logger->info("The Order $orderId has been finalized for Satispay payment.");

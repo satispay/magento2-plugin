@@ -18,12 +18,12 @@
     <virtualType name="Satispay\Satispay\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
-            <argument name="fileName" xsi:type="string">/var/log/satispay_finalize.log</argument>
+            <argument name="fileName" xsi:type="string">/var/log/satispay.log</argument>
         </arguments>
     </virtualType>
     <virtualType name="Satispay\Satispay\Logger\Logger" type="Magento\Framework\Logger\Monolog">
         <arguments>
-            <argument name="name" xsi:type="string">Satispay Finalize Logger</argument>
+            <argument name="name" xsi:type="string">Satispay Logger</argument>
             <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Satispay\Satispay\Logger\Handler</item>
             </argument>
@@ -36,6 +36,21 @@
         </arguments>
     </type>
     <type name="Satispay\Satispay\Command\CompleteUnhandledTransaction">
+        <arguments>
+            <argument name="logger" xsi:type="object">Satispay\Satispay\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Satispay\Satispay\Controller\Callback\Index">
+        <arguments>
+            <argument name="logger" xsi:type="object">Satispay\Satispay\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Satispay\Satispay\Controller\Payment\Index">
+        <arguments>
+            <argument name="logger" xsi:type="object">Satispay\Satispay\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Satispay\Satispay\Controller\Redirect\Index">
         <arguments>
             <argument name="logger" xsi:type="object">Satispay\Satispay\Logger\Logger</argument>
         </arguments>
