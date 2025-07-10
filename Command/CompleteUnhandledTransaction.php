@@ -60,8 +60,10 @@ class CompleteUnhandledTransaction extends Command
         try {
             $this->appState->setAreaCode(Area::AREA_FRONTEND);
             $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
+            return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->logger->error("An error has occured when Finalizing unhandled Satispay Orders: " . $e->getMessage());
+            return Command::FAILURE;
         }
     }
 
