@@ -62,7 +62,7 @@ class CompleteUnhandledTransaction extends Command
             $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->logger->error("An error has occured when Finalizing unhandled Satispay Orders: " . $e->getMessage());
+            $this->logger->error("An error has occurred when Finalizing unhandled Satispay Orders: " . $e->getMessage());
             return Command::FAILURE;
         }
     }
@@ -72,7 +72,7 @@ class CompleteUnhandledTransaction extends Command
         try {
             $this->finalizeUnhandledOrdersService->finalizeUnhandledOrders();
         } catch (\Exception $e) {
-            $this->logger->error("An error has occured when Finalizing unhandled Satispay Orders: " . $e->getMessage());
+            $this->logger->error("An error has occurred when Finalizing unhandled Satispay Orders: " . $e->getMessage());
         }
     }
 }
