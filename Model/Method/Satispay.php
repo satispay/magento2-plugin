@@ -46,8 +46,8 @@ class Satispay extends \Magento\Payment\Model\Method\AbstractMethod
         ScopeConfigInterface $scopeConfig,
         Logger $logger,
         Config $config,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     )
     {
