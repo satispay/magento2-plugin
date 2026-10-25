@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+- Restore compatibility with Symfony Console 7 when executing the unhandled Satispay transactions command.
+
 ## 2.2.5
 
 Add success and failure return codes to CompleteUnhandledTransaction command
